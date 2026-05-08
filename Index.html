@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Le Musée de Maman 🎨</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #F0D080;
+  --cream: #FFF8EE;
+  --burgundy: #7B2D3E;
+  --teal: #2A7D7B;
+  --bg: #1A0F08;
+  --wall: #8B5E3C;
+  --wall-light: #C4956A;
+  --wood: #5C3A1E;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); font-family: 'Quicksand', sans-serif; overflow: hidden; width: 100vw; height: 100dvh; touch-action: none; cursor: none; }
+
+/* CUSTOM CURSOR */
+#cursor { position: fixed; width: 20px; height: 20px; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+#cursor::before { content: '🎨'; font-size: 20px; }
+
+/* LOADING SCREEN */
+#loading {
+  position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+}
+.loading-title { font-family: 'Playfair Display', serif; font-size: clamp(28px,6vw,52px); color: var(--gold); text-align: center; line-height: 1.2; }
+.loading-sub { color: #B8976A; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; }
+.loading-bar-wrap { width: 200px; height: 4px; background: #333; border-radius: 4px; overflow: hidden; }
+.loading-bar { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; animation: loadbar 2s ease forwards; }
+@keyframes loadbar { from { width: 0 } to { width: 100% } }
+.loading-emoji { font-size: 50px; animation: float 2s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+/* START SCREEN */
+#start-screen {
+  position: fixed; inset: 0; z-index: 9000; display: none;
+  background: radial-gradient(ellipse at center, #2C1810 0%, #0D0705 100%);
+  flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+  overflow: hidden;
+}
+.stars { position: absolute; inset: 0; overflow: hidden; }
+.star { position: absolute; border-radius: 50%; background: var(--gold); animation: twinkle var(--d,3s) ease-in-out infinite; opacity: 0; }
+@keyframes twinkle { 0%,100%{opacity:0;transform:scale(0.5)} 50%{opacity:1;transform:scale(1)} }
+
+.start-frame {
+  border: 2px solid var(--gold); padding: 40px 32px; text-align: center;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+  max-width: 380px; width: 90%; position: relative;
+}
+.start-frame::before,.start-frame::after {
+  content: '◆'; position: absolute; color: var(--gold); font-size: 20px;
+}
+.start-frame::before { top: -12px; left: 50%; transform: translateX(-50%); }
+.start-frame::after { bottom: -12px; left: 50%; transform: translateX(-50%); }
+.corner { position: absolute; width: 20px; height: 20px; border-color: var(--gold-light); border-style: solid; }
+.corner-tl { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+.corner-tr { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+.corner-bl { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; }
+.corner-br { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+
+.start-title { font-family: 'Playfair Display', serif; font-size: clamp(24px,5vw,38px); color: var(--gold-light); margin-bottom: 6px; }
+.start-title em { color: var(--gold); font-style: italic; }
+.start-sub { color: #9E7A50; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.start-desc { color: #C8A87A; font-size: 15px; line-height: 1.7; margin-bottom: 30px; }
+
+.btn-gold {
+  display: block; width: 100%; padding: 16px; border: none; border-radius: 0;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+  color: var(--bg); font-family: 'Playfair Display', serif; font-size: 18px;
+  font-weight: 700; letter-spacing: 2px; cursor: pointer;
+  transition: all 0.3s; position: relative; overflow: hidden;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.btn-gold::after { content: ''; position: absolute; inset: 0; background: white; opacity: 0; transition: opacity 0.3s; }
+.btn-gold:hover::after { opacity: 0.15; }
+.btn-ghost {
+  display: block; width: 100%; padding: 12px; border: 1px solid var(--gold);
+  background: transparent; color: var(--gold); font-family: 'Quicksand', sans-serif;
+  font-size: 14px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+}
+.btn-ghost:hover { background: rgba(201,168,76,0.1); }
+
+/* MAIN CANVAS */
+#gameCanvas { position: fixed; inset: 0; display: none; }
+
+/* HUD */
+#hud {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  display: none; pointer-events: none;
+}
+.hud-inner {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding: 0 16px 16px; gap: 10px;
+}
+.hud-btn {
+  pointer-events: all; background: rgba(10,5,2,0.85); backdrop-filter: blur(8px);
+  border: 1px solid var(--gold); color: var(--gold-light); font-family: 'Quicksand', sans-serif;
+  font-size: 12px; padding: 10px 14px; cursor: pointer; border-radius: 0;
+  text-align: center; transition: all 0.2s; letter-spacing: 1px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  min-width: 64px;
+}
+.hud-btn:hover,.hud-btn:active { background: rgba(201,168,76,0.15); }
+.hud-btn .icon { font-size: 22px; }
+.hud-btn.active { border-color: var(--gold-light); background: rgba(201,168,76,0.2); }
+
+#hud-top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: none; pointer-events: none;
+}
+.hud-top-inner {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px;
+}
+.museum-name {
+  font-family: 'Playfair Display', serif; font-size: 14px; color: var(--gold);
+  background: rgba(10,5,2,0.85); backdrop-filter: blur(8px);
+  border: 1px solid rgba(201,168,76,0.3); padding: 8px 14px;
+  letter-spacing: 1px; font-style: italic;
+}
+.visitors-badge {
+  pointer-events: all; background: rgba(10,5,2,0.85); backdrop-filter: blur(8px);
+  border: 1px solid rgba(201,168,76,0.3); color: var(--gold-light);
+  padding: 8px 14px; font-size: 12px; cursor: pointer; letter-spacing: 1px;
+}
+
+/* PANELS */
+.panel {
+  position: fixed; inset: 0; z-index: 500;
+  display: none; flex-direction: column;
+  background: rgba(10,5,2,0.96); backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+.panel.active { display: flex; }
+.panel-header {
+  padding: 20px 20px 16px; border-bottom: 1px solid rgba(201,168,76,0.3);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.panel-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold-light); }
+.panel-close {
+  background: none; border: 1px solid rgba(201,168,76,0.3); color: var(--gold);
+  width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+}
+.panel-content { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
+
+/* COLLECTION GRID */
+.collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+.artwork-card {
+  background: #1C1008; border: 1px solid rgba(201,168,76,0.25);
+  cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+}
+.artwork-card:hover { border-color: var(--gold); transform: scale(1.02); }
+.artwork-card img,.artwork-card .no-img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+}
+.artwork-card .no-img {
+  display: flex; align-items: center; justify-content: center;
+  background: #2A1A0A; font-size: 36px; color: rgba(201,168,76,0.2);
+}
+.artwork-card .card-info { padding: 10px; }
+.artwork-card .card-title { color: var(--gold-light); font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.artwork-card .card-date { color: #7A6040; font-size: 11px; margin-top: 2px; }
+.artwork-card .card-badge {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(0,0,0,0.7); color: var(--gold); font-size: 16px;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+}
+.add-artwork-card {
+  background: rgba(201,168,76,0.05); border: 2px dashed rgba(201,168,76,0.3);
+  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px; cursor: pointer; color: rgba(201,168,76,0.5);
+  font-size: 13px; transition: all 0.2s;
+}
+.add-artwork-card:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
+.add-artwork-card .plus { font-size: 32px; }
+
+/* ARTWORK DETAIL */
+#artwork-detail {
+  position: fixed; inset: 0; z-index: 600; display: none;
+  background: rgba(5,2,0,0.97); flex-direction: column;
+}
+.detail-img-wrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 20px; overflow: hidden;
+}
+.detail-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 0 60px rgba(201,168,76,0.15); }
+.detail-actions { display: flex; padding: 16px; gap: 10px; border-top: 1px solid rgba(201,168,76,0.2); }
+.detail-actions button { flex: 1; }
+
+/* SHARE PANEL */
+.share-link-box {
+  background: #0D0705; border: 1px solid rgba(201,168,76,0.3);
+  padding: 14px; color: var(--gold); font-size: 13px;
+  word-break: break-all; margin-bottom: 16px; font-family: monospace;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.share-link-box span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.copy-btn { background: var(--gold); color: black; border: none; padding: 8px 12px; cursor: pointer; font-weight: 700; flex-shrink: 0; }
+.share-info { color: #9E7A50; font-size: 13px; line-height: 1.7; margin-bottom: 20px; }
+.visitors-list { display: flex; flex-direction: column; gap: 8px; }
+.visitor-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.15); }
+.visitor-avatar { font-size: 24px; }
+.visitor-name { color: var(--gold-light); font-size: 14px; }
+.visitor-status { color: #7A6040; font-size: 11px; }
+
+/* CHAT */
+#chat-overlay {
+  position: fixed; bottom: 80px; right: 16px; width: 280px; z-index: 300;
+  display: none; flex-direction: column; gap: 6px; pointer-events: none;
+}
+.chat-bubble {
+  background: rgba(10,5,2,0.9); backdrop-filter: blur(8px);
+  border: 1px solid rgba(201,168,76,0.3); padding: 10px 14px;
+  color: var(--cream); font-size: 13px; position: relative;
+  animation: bubbleIn 0.3s ease, bubbleOut 0.5s ease 4.5s forwards;
+  pointer-events: none; max-width: 100%;
+}
+.chat-bubble strong { color: var(--gold); display: block; font-size: 11px; margin-bottom: 4px; }
+@keyframes bubbleIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes bubbleOut { from{opacity:1} to{opacity:0} }
+
+/* MESSAGES PANEL */
+.messages-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.msg-btn {
+  background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold-light); padding: 14px 10px; cursor: pointer;
+  font-size: 13px; font-family: 'Quicksand', sans-serif; transition: all 0.2s;
+  text-align: center; line-height: 1.4;
+}
+.msg-btn:hover { background: rgba(201,168,76,0.18); border-color: var(--gold); }
+.msg-btn .msg-icon { font-size: 22px; display: block; margin-bottom: 6px; }
+
+/* TOOLTIP */
+#tooltip {
+  position: fixed; background: rgba(10,5,2,0.92); border: 1px solid var(--gold);
+  color: var(--gold-light); padding: 10px 14px; font-size: 13px; z-index: 200;
+  pointer-events: none; display: none; font-family: 'Playfair Display', serif;
+  font-style: italic; max-width: 220px; text-align: center;
+}
+
+/* ARTWORK EDIT POPUP */
+#artwork-popup {
+  position: fixed; inset: 0; z-index: 700; display: none;
+  background: rgba(5,2,0,0.95); align-items: center; justify-content: center;
+}
+.popup-box {
+  background: #120A04; border: 1px solid var(--gold); padding: 28px;
+  max-width: 340px; width: 90%; position: relative;
+}
+.popup-box h3 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 20px; margin-bottom: 16px; }
+.popup-preview { width: 100%; aspect-ratio: 3/2; object-fit: cover; margin-bottom: 16px; background: #1C1008; display: block; }
+.input-field {
+  width: 100%; background: #0D0705; border: 1px solid rgba(201,168,76,0.3);
+  color: var(--cream); padding: 12px; font-family: 'Quicksand', sans-serif;
+  font-size: 14px; margin-bottom: 12px; outline: none;
+}
+.input-field:focus { border-color: var(--gold); }
+
+/* MUSIC TOGGLE */
+#music-toggle {
+  position: fixed; top: 12px; right: 70px; z-index: 200;
+  display: none; background: rgba(10,5,2,0.85); backdrop-filter: blur(8px);
+  border: 1px solid rgba(201,168,76,0.3); color: var(--gold);
+  width: 40px; height: 40px; font-size: 18px; cursor: pointer;
+  align-items: center; justify-content: center;
+}
+
+/* NOTIFICATION */
+#notification {
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-100px);
+  background: rgba(10,5,2,0.92); border: 1px solid var(--gold);
+  color: var(--gold-light); padding: 12px 20px; z-index: 900;
+  font-size: 14px; text-align: center; transition: transform 0.4s ease;
+  pointer-events: none; white-space: nowrap;
+}
+#notification.show { transform: translateX(-50%) translateY(0); }
+
+/* JOYSTICK */
+#joystick-container {
+  position: fixed; bottom: 100px; left: 20px; z-index: 150;
+  display: none;
+}
+#joystick-base {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: rgba(201,168,76,0.08); border: 2px solid rgba(201,168,76,0.25);
+  position: relative; touch-action: none;
+}
+#joystick-knob {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle, var(--gold-light), var(--gold));
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  box-shadow: 0 0 12px rgba(201,168,76,0.5); touch-action: none;
+}
+
+@media (min-width: 768px) {
+  #joystick-container { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+
+<!-- NOTIFICATION -->
+<div id="notification"></div>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-emoji">🎨</div>
+  <div class="loading-title">Le Musée<br><em>de Maman</em></div>
+  <div class="loading-sub">Ouverture des portes...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+</div>
+
+<!-- START SCREEN -->
+<div id="start-screen">
+  <div class="stars" id="stars"></div>
+  <div class="start-frame">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+    <div class="start-title">Le Musée<br><em>de Maman</em> ✨</div>
+    <div class="start-sub">Galerie d'Art Personnelle</div>
+    <div class="start-desc">
+      Accrochez vos peintures sur les murs de votre musée enchanté et invitez vos proches à venir les admirer ! 🎭
+    </div>
+    <button class="btn-gold" id="btn-new-game">🚪 Entrer dans ma galerie</button>
+    <button class="btn-ghost" id="btn-visitor" style="margin-top:8px">👥 Je suis un visiteur invité</button>
+  </div>
+</div>
+
+<!-- CANVAS -->
+<canvas id="gameCanvas"></canvas>
+
+<!-- TOP HUD -->
+<div id="hud-top">
+  <div class="hud-top-inner">
+    <div class="museum-name" id="museum-name-label">🏛 Mon Musée</div>
+    <div class="visitors-badge" id="visitors-badge" onclick="openPanel('share-panel')">👥 <span id="visitor-count">0</span> visiteur(s)</div>
+  </div>
+</div>
+
+<!-- BOTTOM HUD -->
+<div id="hud">
+  <div class="hud-inner">
+    <button class="hud-btn" onclick="openPanel('collection-panel')">
+      <span class="icon">🖼</span>Collection
+    </button>
+    <button class="hud-btn" id="btn-place" onclick="openPanel('place-panel')">
+      <span class="icon">📸</span>Ajouter
+    </button>
+    <button class="hud-btn" onclick="openPanel('share-panel')">
+      <span class="icon">🔗</span>Partager
+    </button>
+    <button class="hud-btn" onclick="openPanel('messages-panel')">
+      <span class="icon">💬</span>Messages
+    </button>
+  </div>
+</div>
+
+<!-- MUSIC TOGGLE -->
+<div id="music-toggle" onclick="toggleMusic()">🎵</div>
+
+<!-- JOYSTICK -->
+<div id="joystick-container">
+  <div id="joystick-base">
+    <div id="joystick-knob"></div>
+  </div>
+</div>
+
+<!-- CHAT OVERLAY -->
+<div id="chat-overlay"></div>
+
+<!-- TOOLTIP -->
+<div id="tooltip"></div>
+
+<!-- ARTWORK POPUP (Edit/Name) -->
+<div id="artwork-popup">
+  <div class="popup-box">
+    <h3>🎨 Votre tableau</h3>
+    <img class="popup-preview" id="popup-preview" src="" alt="">
+    <input class="input-field" id="popup-title" type="text" placeholder="Titre du tableau..." maxlength="40">
+    <input class="input-field" id="popup-desc" type="text" placeholder="Une petite note... (optionnel)" maxlength="60">
+    <button class="btn-gold" onclick="confirmAddArtwork()" style="width:100%">✨ Accrocher dans le musée</button>
+    <button class="btn-ghost" onclick="closePopup()" style="width:100%;margin-top:8px">Annuler</button>
+  </div>
+</div>
+
+<!-- ARTWORK DETAIL -->
+<div id="artwork-detail">
+  <div class="panel-header">
+    <div class="panel-title" id="detail-title">Tableau</div>
+    <button class="panel-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-img-wrap">
+    <img id="detail-img" src="" alt="">
+  </div>
+  <div style="padding:0 20px 8px;color:#7A6040;font-size:13px;font-style:italic" id="detail-desc"></div>
+  <div class="detail-actions">
+    <button class="btn-ghost" id="detail-place-btn" onclick="placeArtworkFromDetail()">🏛 Placer dans musée</button>
+    <button class="btn-ghost" onclick="deleteArtworkFromDetail()" style="border-color:rgba(180,60,60,0.5);color:#E07070;">🗑 Supprimer</button>
+    <button class="btn-ghost" onclick="closeDetail()">✕</button>
+  </div>
+</div>
+
+<!-- PANELS -->
+
+<!-- COLLECTION -->
+<div class="panel" id="collection-panel">
+  <div class="panel-header">
+    <div class="panel-title">🖼 Ma Collection</div>
+    <button class="panel-close" onclick="closePanel('collection-panel')">✕</button>
+  </div>
+  <div class="panel-content">
+    <div class="collection-grid" id="collection-grid"></div>
+  </div>
+</div>
+
+<!-- SHARE -->
+<div class="panel" id="share-panel">
+  <div class="panel-header">
+    <div class="panel-title">🔗 Partager ma galerie</div>
+    <button class="panel-close" onclick="closePanel('share-panel')">✕</button>
+  </div>
+  <div class="panel-content">
+    <div class="share-info">
+      Partagez ce lien avec vos amis pour qu'ils puissent visiter votre musée en temps réel et voir toutes vos peintures ! 🎉
+    </div>
+    <div class="share-link-box">
+      <span id="share-link-text">Génération du lien...</span>
+      <button class="copy-btn" onclick="copyShareLink()">📋 Copier</button>
+    </div>
+    <button class="btn-gold" onclick="shareNative()" style="width:100%;margin-bottom:20px">📤 Partager via iPhone</button>
+    <div style="color:var(--gold);font-family:'Playfair Display',serif;font-size:16px;margin-bottom:12px">Visiteurs en ligne :</div>
+    <div class="visitors-list" id="visitors-list">
+      <div style="color:#7A6040;font-size:13px;font-style:italic">Personne encore... Partagez le lien ! 🌟</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLACE ARTWORK PANEL -->
+<div class="panel" id="place-panel">
+  <div class="panel-header">
+    <div class="panel-title">📸 Ajouter une œuvre</div>
+    <button class="panel-close" onclick="closePanel('place-panel')">✕</button>
+  </div>
+  <div class="panel-content" style="display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;height:100%">
+    <div style="font-size:80px">🎨</div>
+    <div style="color:var(--gold-light);font-family:'Playfair Display',serif;font-size:22px;text-align:center">Photographiez votre peinture</div>
+    <div style="color:#9E7A50;font-size:14px;text-align:center;line-height:1.7;max-width:280px">Prenez votre peinture en photo ou choisissez une image de votre galerie. Elle sera encadrée et accrochée dans votre musée !</div>
+    <button class="btn-gold" style="width:100%;max-width:280px" onclick="triggerCamera()">📷 Prendre une photo</button>
+    <button class="btn-ghost" style="width:100%;max-width:280px" onclick="triggerGallery()">🖼 Depuis ma galerie</button>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+<div class="panel" id="messages-panel">
+  <div class="panel-header">
+    <div class="panel-title">💬 Messages</div>
+    <button class="panel-close" onclick="closePanel('messages-panel')">✕</button>
+  </div>
+  <div class="panel-content">
+    <div style="color:#9E7A50;font-size:13px;margin-bottom:16px">Envoyez un message à tous les visiteurs de votre galerie :</div>
+    <div class="messages-grid">
+      <button class="msg-btn" onclick="sendMsg('🎨 Bienvenue dans ma galerie ! Profitez bien !')"><span class="msg-icon">🎉</span>Bienvenue !</button>
+      <button class="msg-btn" onclick="sendMsg('✨ Ce tableau est ma création préférée !')"><span class="msg-icon">💛</span>Coup de cœur</button>
+      <button class="msg-btn" onclick="sendMsg('🖌 J\'ai peint ça avec beaucoup d\'amour !')"><span class="msg-icon">🖌</span>Avec amour</button>
+      <button class="msg-btn" onclick="sendMsg('🌸 Merci de visiter mon musée !')"><span class="msg-icon">🌸</span>Merci !</button>
+      <button class="msg-btn" onclick="sendMsg('🌟 Nouvelle peinture accrochée ! Venez voir !')"><span class="msg-icon">🌟</span>Nouveauté</button>
+      <button class="msg-btn" onclick="sendMsg('☕ Imaginez un café et des croissants pour l\'occasion !')"><span class="msg-icon">☕</span>Café virtuel</button>
+      <button class="msg-btn" onclick="sendMsg('🎶 Bonne visite, prenez le temps d\'observer !')"><span class="msg-icon">🎶</span>Bonne visite</button>
+      <button class="msg-btn" onclick="sendMsg('👩‍🎨 Je peins depuis des années avec passion !')"><span class="msg-icon">👩‍🎨</span>Ma passion</button>
+    </div>
+    <div style="color:var(--gold);font-family:'Playfair Display',serif;font-size:16px;margin:16px 0 12px">Message personnalisé :</div>
+    <textarea id="custom-msg" class="input-field" style="min-height:80px;resize:none" placeholder="Écrivez votre message..."></textarea>
+    <button class="btn-gold" style="width:100%" onclick="sendCustomMsg()">📤 Envoyer à tous</button>
+  </div>
+</div>
+
+<!-- FILE INPUTS -->
+<input type="file" id="file-camera" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this)">
+<input type="file" id="file-gallery" accept="image/*" style="display:none" onchange="handleFile(this)">
+
+<script>
+// ============================================================
+// DATA & STATE
+// ============================================================
+const STORAGE_KEY = 'musee_maman_v3';
+let state = {
+  artworks: [],       // { id, title, desc, dataUrl, placed, frameX, frameY, frameIdx, addedAt }
+  museumName: 'Mon Musée',
+  isOwner: true,
+  playerId: 'owner',
+  playerName: 'Maman',
+  visitorEmoji: '🎨',
+};
+
+let pendingImage = null; // dataUrl en attente de validation
+let detailArtworkId = null;
+
+function saveState() {
+  try {
+    const toSave = {
+      artworks: state.artworks.map(a => ({...a})),
+      museumName: state.museumName
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  } catch(e) { console.warn('Save failed', e); }
+}
+
+function loadState() {
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) {
+      const parsed = JSON.parse(d);
+      state.artworks = parsed.artworks || [];
+      state.museumName = parsed.museumName || 'Mon Musée';
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+// CANVAS & RENDERING ENGINE
+// ============================================================
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// World dimensions
+const WORLD_W = 1600;
+const WORLD_H = 1000;
+
+// Camera
+let cam = { x: 0, y: 0 };
+
+// Player
+let player = {
+  x: 400, y: 500, vx: 0, vy: 0,
+  angle: 0, targetAngle: 0,
+  frame: 0, frameTimer: 0,
+  isMoving: false,
+  color: '#FFD93D',
+  name: 'Maman',
+  emoji: '🎨',
+};
+
+// Visitors (other players)
+let visitors = {};
+
+// Frames on walls (static positions)
+const FRAMES = [
+  // North wall
+  {x:120, y:60, w:90, h:75, wall:'n'}, {x:260, y:60, w:110, h:85, wall:'n'},
+  {x:420, y:55, w:85, h:70, wall:'n'}, {x:560, y:60, w:100, h:80, wall:'n'},
+  {x:720, y:55, w:95, h:75, wall:'n'}, {x:870, y:60, w:110, h:85, wall:'n'},
+  {x:1040, y:60, w:85, h:70, wall:'n'}, {x:1200, y:55, w:100, h:80, wall:'n'},
+  {x:1360, y:60, w:90, h:75, wall:'n'},
+
+  // South wall
+  {x:130, y:880, w:95, h:75, wall:'s'}, {x:280, y:875, w:110, h:85, wall:'s'},
+  {x:450, y:880, w:85, h:70, wall:'s'}, {x:600, y:875, w:100, h:80, wall:'s'},
+  {x:760, y:880, w:95, h:75, wall:'s'}, {x:920, y:875, w:110, h:85, wall:'s'},
+  {x:1100, y:880, w:85, h:70, wall:'s'}, {x:1260, y:875, w:100, h:80, wall:'s'},
+  {x:1400, y:880, w:90, h:75, wall:'s'},
+
+  // West wall
+  {x:30, y:130, w:75, h:100, wall:'w'}, {x:25, y:280, w:80, h:110, wall:'w'},
+  {x:30, y:430, w:75, h:95, wall:'w'}, {x:25, y:580, w:80, h:110, wall:'w'},
+  {x:30, y:730, w:75, h:95, wall:'w'},
+
+  // East wall
+  {x:1500, y:130, w:75, h:100, wall:'e'}, {x:1495, y:280, w:80, h:110, wall:'e'},
+  {x:1500, y:430, w:75, h:95, wall:'e'}, {x:1495, y:580, w:80, h:110, wall:'e'},
+  {x:1500, y:730, w:75, h:95, wall:'e'},
+
+  // Interior columns / pedestals
+  {x:480, y:340, w:80, h:60, wall:'n'}, {x:680, y:340, w:80, h:60, wall:'n'},
+  {x:880, y:340, w:80, h:60, wall:'n'}, {x:1080, y:340, w:80, h:60, wall:'n'},
+
+  {x:480, y:580, w:80, h:60, wall:'s'}, {x:680, y:580, w:80, h:60, wall:'s'},
+  {x:880, y:580, w:80, h:60, wall:'s'}, {x:1080, y:580, w:80, h:60, wall:'s'},
+];
+
+// Plants, sculptures, decorations positions
+const DECOR = [
+  // Pots de plantes
+  {type:'plant', x:80, y:160}, {type:'plant', x:1500, y:160},
+  {type:'plant', x:80, y:750}, {type:'plant', x:1500, y:750},
+  {type:'plant', x:400, y:440}, {type:'plant', x:750, y:440},
+  {type:'plant', x:1100, y:440}, {type:'plant', x:1300, y:440},
+  // Bancs
+  {type:'bench', x:300, y:470}, {type:'bench', x:600, y:470},
+  {type:'bench', x:900, y:470}, {type:'bench', x:1200, y:470},
+  // Lustres
+  {type:'chandelier', x:400, y:0}, {type:'chandelier', x:800, y:0},
+  {type:'chandelier', x:1200, y:0},
+  // Sculptures
+  {type:'statue', x:200, y:450}, {type:'statue', x:1380, y:450},
+];
+
+// Collision walls (simple AABB) - borders + pillars
+const WALLS = [
+  {x:0, y:0, w:WORLD_W, h:50},           // north
+  {x:0, y:WORLD_H-50, w:WORLD_W, h:50},  // south
+  {x:0, y:0, w:50, h:WORLD_H},           // west
+  {x:WORLD_W-50, y:0, w:50, h:WORLD_H}, // east
+  // Interior pillars
+  {x:460, y:380, w:30, h:30}, {x:660, y:380, w:30, h:30},
+  {x:860, y:380, w:30, h:30}, {x:1060, y:380, w:30, h:30},
+  {x:460, y:560, w:30, h:30}, {x:660, y:560, w:30, h:30},
+  {x:860, y:560, w:30, h:30}, {x:1060, y:560, w:30, h:30},
+];
+// ============================================================
+// DRAWING FUNCTIONS
+// ============================================================
+
+function drawBackground() {
+  // Floor - parquet with warm wood tiles
+  const tileW = 80, tileH = 80;
+  for (let ty = 0; ty * tileH < WORLD_H; ty++) {
+    for (let tx = 0; tx * tileW < WORLD_W; tx++) {
+      const even = (tx + ty) % 2 === 0;
+      ctx.fillStyle = even ? '#6B3F18' : '#7E4E22';
+      ctx.fillRect(tx * tileW, ty * tileH, tileW, tileH);
+      // Wood grain
+      ctx.strokeStyle = even ? '#5A3312' : '#6C4118';
+      ctx.lineWidth = 0.5;
+      for (let g = 0; g < tileW; g += 12) {
+        ctx.beginPath(); ctx.moveTo(tx*tileW+g, ty*tileH); ctx.lineTo(tx*tileW+g, ty*tileH+tileH); ctx.stroke();
+      }
+    }
+  }
+
+  // Wainscoting / baseboard
+  ctx.fillStyle = '#3D2010';
+  ctx.fillRect(0, 0, WORLD_W, 55);
+  ctx.fillRect(0, WORLD_H-55, WORLD_W, 55);
+  ctx.fillRect(0, 0, 55, WORLD_H);
+  ctx.fillRect(WORLD_W-55, 0, 55, WORLD_H);
+
+  // Wall color (upper)
+  ctx.fillStyle = '#8B5A2B';
+  ctx.fillRect(55, 55, WORLD_W-110, 200);
+  ctx.fillRect(55, WORLD_H-255, WORLD_W-110, 200);
+
+  // Wall panels / dado
+  ctx.strokeStyle = '#C9A84C';
+  ctx.lineWidth = 2;
+  for (let px = 120; px < WORLD_W-100; px += 200) {
+    ctx.strokeRect(px, 65, 150, 165);
+    ctx.strokeRect(px+10, 75, 130, 145);
+  }
+  for (let px = 120; px < WORLD_W-100; px += 200) {
+    ctx.strokeRect(px, WORLD_H-230, 150, 165);
+    ctx.strokeRect(px+10, WORLD_H-220, 130, 145);
+  }
+
+  // Gold trim / molding
+  ctx.fillStyle = '#C9A84C';
+  ctx.fillRect(55, 52, WORLD_W-110, 6);
+  ctx.fillRect(55, WORLD_H-58, WORLD_W-110, 6);
+  ctx.fillRect(55, 245, WORLD_W-110, 4);
+  ctx.fillRect(55, WORLD_H-249, WORLD_W-110, 4);
+  ctx.fillRect(52, 55, 6, WORLD_H-110);
+  ctx.fillRect(WORLD_W-58, 55, 6, WORLD_H-110);
+
+  // Carpet runner (center aisle)
+  ctx.fillStyle = '#1A4A6A';
+  ctx.fillRect(200, 400, WORLD_W-400, 200);
+  // Carpet border
+  ctx.strokeStyle = '#C9A84C';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(205, 405, WORLD_W-410, 190);
+  ctx.strokeRect(215, 415, WORLD_W-430, 170);
+  // Carpet pattern (simplified diamonds)
+  ctx.fillStyle = 'rgba(201,168,76,0.2)';
+  for (let cx = 240; cx < WORLD_W-200; cx += 60) {
+    ctx.save(); ctx.translate(cx, 500); ctx.rotate(Math.PI/4);
+    ctx.fillRect(-14,-14,28,28); ctx.restore();
+  }
+
+  // Ceiling
+  ctx.fillStyle = '#F5E8D0';
+  ctx.fillRect(55, 270, WORLD_W-110, WORLD_H-595);
+  // Ceiling molding
+  ctx.fillStyle = '#C9A84C';
+  ctx.fillRect(55, 270, WORLD_W-110, 3);
+  ctx.fillRect(55, WORLD_H-275, WORLD_W-110, 3);
+}
+
+function drawDecor() {
+  DECOR.forEach(d => {
+    ctx.save();
+    ctx.translate(d.x, d.y);
+
+    if (d.type === 'plant') {
+      // Pot
+      ctx.fillStyle = '#8B4513';
+      ctx.beginPath(); ctx.moveTo(-15, 30); ctx.lineTo(15, 30); ctx.lineTo(12, 55); ctx.lineTo(-12, 55); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#6B3410'; ctx.fillRect(-15, 25, 30, 8);
+      // Plant
+      ctx.fillStyle = '#2D8B45';
+      ctx.beginPath(); ctx.ellipse(-8,-5,12,18,-.3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#3DAF58';
+      ctx.beginPath(); ctx.ellipse(10, 0, 12, 20, .4, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#228B35';
+      ctx.beginPath(); ctx.ellipse(0, -12, 10, 22, 0, 0, Math.PI*2); ctx.fill();
+      // Flower
+      ctx.fillStyle = '#FFD93D';
+      ctx.beginPath(); ctx.arc(0, -28, 5, 0, Math.PI*2); ctx.fill();
+
+    } else if (d.type === 'bench') {
+      // Bench
+      ctx.fillStyle = '#5C3A1E';
+      ctx.fillRect(-45, 8, 90, 12); // seat
+      ctx.fillRect(-45, 20, 8, 18); ctx.fillRect(37, 20, 8, 18); // legs
+      ctx.fillStyle = '#7A5030';
+      ctx.fillRect(-44, 7, 88, 10); // cushion
+      // Cushion detail
+      ctx.fillStyle = '#1A4A6A';
+      ctx.fillRect(-40, 9, 80, 6);
+
+    } else if (d.type === 'chandelier') {
+      // Chandelier (hanging from ceiling-ish)
+      ctx.fillStyle = '#C9A84C';
+      ctx.fillRect(-2, 0, 4, 30); // chain
+      ctx.beginPath(); ctx.arc(0, 50, 25, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,240,180,0.15)'; ctx.fill();
+      ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 2; ctx.stroke();
+      // Candles
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        const cx = Math.cos(a) * 20, cy = 50 + Math.sin(a) * 5;
+        ctx.fillStyle = '#FFF8DC';
+        ctx.fillRect(cx-2, cy-8, 4, 12);
+        // Flame
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath(); ctx.ellipse(cx, cy-12, 3, 5, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,200,50,0.4)';
+        ctx.beginPath(); ctx.arc(cx, cy-10, 8, 0, Math.PI*2); ctx.fill();
+      }
+
+    } else if (d.type === 'statue') {
+      // Pedestal
+      ctx.fillStyle = '#9E9080';
+      ctx.fillRect(-20, 10, 40, 50);
+      ctx.fillStyle = '#BAB0A0';
+      ctx.fillRect(-22, 6, 44, 8);
+      ctx.fillRect(-18, 58, 36, 8);
+      // Abstract sculpture
+      ctx.fillStyle = '#D0C8B8';
+      ctx.beginPath(); ctx.ellipse(0, -10, 14, 22, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#C0B8A8';
+      ctx.beginPath(); ctx.arc(0, -28, 10, 0, Math.PI*2); ctx.fill();
+      // Highlight
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.beginPath(); ctx.ellipse(-4, -32, 4, 6, -.5, 0, Math.PI*2); ctx.fill();
+    }
+
+    ctx.restore();
+  });
+}
+
+function drawPillars() {
+  // Interior display pillars
+  const pillars = [
+    {x:475, y:395}, {x:675, y:395}, {x:875, y:395}, {x:1075, y:395},
+    {x:475, y:575}, {x:675, y:575}, {x:875, y:575}, {x:1075, y:575},
+  ];
+  pillars.forEach(p => {
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath(); ctx.ellipse(p.x+5, p.y+5, 18, 8, 0, 0, Math.PI*2); ctx.fill();
+    // Pillar body
+    const grad = ctx.createLinearGradient(p.x-15, 0, p.x+15, 0);
+    grad.addColorStop(0, '#8B7355'); grad.addColorStop(.4,'#C4A97A'); grad.addColorStop(.7,'#D4B98A'); grad.addColorStop(1,'#8B7355');
+    ctx.fillStyle = grad;
+    ctx.fillRect(p.x-15, p.y-120, 30, 120);
+    // Cap & base
+    ctx.fillStyle = '#C9A84C';
+    ctx.fillRect(p.x-18, p.y-125, 36, 8);
+    ctx.fillRect(p.x-18, p.y-3, 36, 8);
+  });
+}
+
+function drawFrames() {
+  FRAMES.forEach((frame, idx) => {
+    const art = state.artworks.find(a => a.placed && a.frameIdx === idx);
+
+    // Frame shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(frame.x-3+4, frame.y-3+4, frame.w+6, frame.h+6);
+
+    // Outer frame (ornate gold)
+    const fg = ctx.createLinearGradient(frame.x-3, frame.y-3, frame.x+frame.w+3, frame.y+frame.h+3);
+    fg.addColorStop(0, '#A07828'); fg.addColorStop(.3,'#F0D080'); fg.addColorStop(.6,'#C9A84C'); fg.addColorStop(1,'#8B6520');
+    ctx.fillStyle = fg;
+    ctx.fillRect(frame.x-6, frame.y-6, frame.w+12, frame.h+12);
+
+    // Frame inner border (dark)
+    ctx.fillStyle = '#3A2000';
+    ctx.fillRect(frame.x-2, frame.y-2, frame.w+4, frame.h+4);
+
+    // Frame corners ornament
+    ctx.fillStyle = '#F0D080';
+    const cs = 6;
+    [[frame.x-6,frame.y-6],[frame.x+frame.w+6-cs,frame.y-6],[frame.x-6,frame.y+frame.h+6-cs],[frame.x+frame.w+6-cs,frame.y+frame.h+6-cs]].forEach(([cx,cy]) => {
+      ctx.fillRect(cx, cy, cs, cs);
+    });
+
+    if (art && art.dataUrl) {
+      // Draw artwork image
+      const img = artImageCache[art.id];
+      if (img && img.complete) {
+        ctx.drawImage(img, frame.x, frame.y, frame.w, frame.h);
+      } else if (!img) {
+        loadArtImage(art);
+        ctx.fillStyle = '#2A1A08'; ctx.fillRect(frame.x, frame.y, frame.w, frame.h);
+      }
+      // Title tag below frame
+      ctx.fillStyle = 'rgba(0,0,0,0.8)';
+      ctx.fillRect(frame.x, frame.y+frame.h+2, frame.w, 18);
+      ctx.fillStyle = '#F0D080';
+      ctx.font = '9px Quicksand, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(art.title || 'Sans titre', frame.x + frame.w/2, frame.y+frame.h+13);
+    } else {
+      // Empty frame
+      ctx.fillStyle = '#1C1008';
+      ctx.fillRect(frame.x, frame.y, frame.w, frame.h);
+      // Empty hint
+      ctx.fillStyle = 'rgba(201,168,76,0.2)';
+      ctx.font = '20px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('🎨', frame.x+frame.w/2, frame.y+frame.h/2+7);
+    }
+  });
+}
+
+// Image cache to avoid re-creating Image objects every frame
+const artImageCache = {};
+function loadArtImage(art) {
+  if (artImageCache[art.id]) return;
+  const img = new Image();
+  img.src = art.dataUrl;
+  artImageCache[art.id] = img;
+}
+
+function drawPlayer(p, isMe) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.angle);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath(); ctx.ellipse(0, 22, 18, 8, 0, 0, Math.PI*2); ctx.fill();
+
+  // Body - coat
+  const bodyGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, 22);
+  bodyGrad.addColorStop(0, isMe ? '#FFE066' : '#6ABFE0');
+  bodyGrad.addColorStop(1, isMe ? '#CC9900' : '#2A7DB0');
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath(); ctx.ellipse(0, 4, 18, 20, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = isMe ? '#8B6600' : '#1A5A80'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(0, 4, 18, 20, 0, 0, Math.PI*2); ctx.stroke();
+
+  // Head
+  const headGrad = ctx.createRadialGradient(-3, -22, 2, 0, -22, 12);
+  headGrad.addColorStop(0, '#FFD0A0'); headGrad.addColorStop(1, '#D49060');
+  ctx.fillStyle = headGrad;
+  ctx.beginPath(); ctx.arc(0, -22, 12, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#A06840'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Eyes
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.arc(-4, -24, 2.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -24, 2.5, 0, Math.PI*2); ctx.fill();
+  // Eye shine
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); ctx.arc(-3, -25, 1, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(5, -25, 1, 0, Math.PI*2); ctx.fill();
+
+  // Smile
+  ctx.strokeStyle = '#8B5A2B'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -20, 4, 0.2, Math.PI-0.2); ctx.stroke();
+
+  // Hair (bun for maman)
+  if (isMe) {
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath(); ctx.arc(0, -33, 7, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-6, -29, 4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(6, -29, 4, 0, Math.PI*2); ctx.fill();
+    // Palette !
+    ctx.fillStyle = '#C9A84C';
+    ctx.beginPath(); ctx.ellipse(18, 0, 10, 7, 0.3, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#FF6B6B'; ctx.beginPath(); ctx.arc(14,-3, 3, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#4ECDC4'; ctx.beginPath(); ctx.arc(20,-5, 3, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#FFE66D'; ctx.beginPath(); ctx.arc(24, 2, 3, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Name tag
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  const nm = p.name || (isMe ? 'Maman' : 'Visiteur');
+  ctx.font = '11px Quicksand, sans-serif'; ctx.textAlign = 'center';
+  const tw = ctx.measureText(nm).width;
+  ctx.fillRect(-tw/2-4, -50, tw+8, 16);
+  ctx.fillStyle = isMe ? '#FFD93D' : '#6ABFE0';
+  ctx.fillText(nm, 0, -38);
+
+  // Emoji above
+  ctx.font = '14px sans-serif';
+  ctx.fillText(p.emoji || '🎨', 0, -54);
+
+  ctx.restore();
+
+  // Walking animation particles
+  if (p.isMoving && isMe) {
+    ctx.fillStyle = 'rgba(201,168,76,0.5)';
+    ctx.beginPath(); ctx.arc(p.x + (Math.random()-0.5)*20, p.y+10, 2, 0, Math.PI*2); ctx.fill();
+  }
+}
+
+function drawLighting() {
+  // Spotlight effects below chandeliers
+  const chandeliers = DECOR.filter(d => d.type === 'chandelier');
+  chandeliers.forEach(c => {
+    const grad = ctx.createRadialGradient(c.x, c.y+300, 0, c.x, c.y+300, 250);
+    grad.addColorStop(0, 'rgba(255,240,180,0.12)');
+    grad.addColorStop(1, 'rgba(255,240,180,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(c.x, c.y+300, 250, 0, Math.PI*2); ctx.fill();
+  });
+  // Edge vignette
+  const vgx = ctx.createRadialGradient(WORLD_W/2, WORLD_H/2, WORLD_W*0.2, WORLD_W/2, WORLD_H/2, WORLD_W*0.8);
+  vgx.addColorStop(0, 'rgba(0,0,0,0)');
+  vgx.addColorStop(1, 'rgba(0,0,0,0.35)');
+  ctx.fillStyle = vgx;
+  ctx.fillRect(0, 0, WORLD_W, WORLD_H);
+}
+
+// ============================================================
+// MAIN GAME LOOP
+// ============================================================
+let lastTime = 0;
+const PLAYER_SPEED = 180; // px/sec
+
+let input = { up:false, down:false, left:false, right:false };
+let joystickActive = false;
+let joystickDX = 0, joystickDY = 0;
+
+function gameLoop(ts) {
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+
+  // Movement
+  let mvx = 0, mvy = 0;
+  if (state.isOwner || true) {
+    if (joystickActive) { mvx = joystickDX; mvy = joystickDY; }
+    else {
+      if (input.left) mvx -= 1; if (input.right) mvx += 1;
+      if (input.up) mvy -= 1; if (input.down) mvy += 1;
+    }
+  }
+
+  const spd = PLAYER_SPEED * dt;
+  const len = Math.sqrt(mvx*mvx + mvy*mvy);
+  if (len > 0) {
+    mvx = mvx/len * spd; mvy = mvy/len * spd;
+    player.isMoving = true;
+    player.targetAngle = Math.atan2(mvy, mvx) + Math.PI/2;
+  } else { player.isMoving = false; }
+
+  // Smooth angle
+  let da = player.targetAngle - player.angle;
+  while (da > Math.PI) da -= Math.PI*2;
+  while (da < -Math.PI) da += Math.PI*2;
+  player.angle += da * 0.15;
+
+  // Move with collision
+  const nx = player.x + mvx, ny = player.y + mvy;
+  const r = 16;
+  let cx = nx, cy = ny;
+
+  // Check walls
+  WALLS.forEach(w => {
+    if (cx+r > w.x && cx-r < w.x+w.w && cy+r > w.y && cy-r < w.y+w.h) {
+      // Push out
+      const ox = cx - (w.x + w.w/2), oy = cy - (w.y + w.h/2);
+      if (Math.abs(ox) > Math.abs(oy)) {
+        cx = ox > 0 ? w.x + w.w + r : w.x - r;
+      } else {
+        cy = oy > 0 ? w.y + w.h + r : w.y - r;
+      }
+    }
+  });
+  player.x = cx; player.y = cy;
+
+  // Camera smooth follow
+  cam.x += (player.x - canvas.width/2 - cam.x) * 0.1;
+  cam.y += (player.y - canvas.height/2 - cam.y) * 0.1;
+  cam.x = Math.max(0, Math.min(WORLD_W - canvas.width, cam.x));
+  cam.y = Math.max(0, Math.min(WORLD_H - canvas.height, cam.y));
+
+  // ---- DRAW ----
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
+
+  drawBackground();
+  drawDecor();
+  drawLighting();
+  drawPillars();
+  drawFrames();
+
+  // Draw visitors
+  Object.values(visitors).forEach(v => drawPlayer(v, false));
+
+  // Draw player
+  drawPlayer(player, true);
+
+  ctx.restore();
+
+  // Proximity tooltip: check if near a frame
+  let nearFrame = null;
+  FRAMES.forEach((frame, idx) => {
+    const fdx = (frame.x + frame.w/2) - player.x;
+    const fdy = (frame.y + frame.h/2) - player.y;
+    if (Math.sqrt(fdx*fdx + fdy*fdy) < 80) nearFrame = {frame, idx};
+  });
+  if (nearFrame) {
+    const art = state.artworks.find(a => a.placed && a.frameIdx === nearFrame.idx);
+    const ttip = document.getElementById('tooltip');
+    ttip.style.display = 'block';
+    ttip.style.left = canvas.width/2 - 110 + 'px';
+    ttip.style.top = canvas.height/2 - 120 + 'px';
+    if (art) {
+      ttip.textContent = '"' + (art.title||'Sans titre') + '"' + (art.desc ? ' — ' + art.desc : '');
+    } else {
+      ttip.textContent = 'Appuyez pour accrocher un tableau ici';
+    }
+  } else {
+    document.getElementById('tooltip').style.display = 'none';
+  }
+
+  // Broadcast position (throttled)
+  broadcastPosition();
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// TOUCH / CLICK CONTROLS
+// ============================================================
+let touchTarget = null;
+canvas.addEventListener('touchstart', e => { e.preventDefault(); handleTap(e.touches[0]); }, {passive:false});
+canvas.addEventListener('mousedown', e => handleTap(e));
+canvas.addEventListener('mousemove', e => {
+  document.getElementById('cursor').style.left = e.clientX + 'px';
+  document.getElementById('cursor').style.top = e.clientY + 'px';
+});
+
+function handleTap(e) {
+  const wx = e.clientX + cam.x;
+  const wy = e.clientY + cam.y;
+
+  // Check frame click
+  let hitFrame = null;
+  FRAMES.forEach((frame, idx) => {
+    if (wx > frame.x-8 && wx < frame.x+frame.w+8 && wy > frame.y-8 && wy < frame.y+frame.h+8) {
+      hitFrame = {frame, idx};
+    }
+  });
+
+  if (hitFrame) {
+    handleFrameClick(hitFrame.idx);
+    return;
+  }
+  // Move player
+  player.x = wx; player.y = wy; // Teleport (tap to move)
+}
+
+function handleFrameClick(frameIdx) {
+  if (!state.isOwner) {
+    // Visitors just see the art
+    const art = state.artworks.find(a => a.placed && a.frameIdx === frameIdx);
+    if (art) { openArtworkDetail(art.id); }
+    return;
+  }
+  const art = state.artworks.find(a => a.placed && a.frameIdx === frameIdx);
+  if (art) {
+    openArtworkDetail(art.id);
+  } else {
+    // Place an artwork here
+    openFramePicker(frameIdx);
+  }
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowLeft'||e.key==='a') input.left=true;
+  if (e.key==='ArrowRight'||e.key==='d') input.right=true;
+  if (e.key==='ArrowUp'||e.key==='w') input.up=true;
+  if (e.key==='ArrowDown'||e.key==='s') input.down=true;
+});
+document.addEventListener('keyup', e => {
+  if (e.key==='ArrowLeft'||e.key==='a') input.left=false;
+  if (e.key==='ArrowRight'||e.key==='d') input.right=false;
+  if (e.key==='ArrowUp'||e.key==='w') input.up=false;
+  if (e.key==='ArrowDown'||e.key==='s') input.down=false;
+});
+
+// ============================================================
+// VIRTUAL JOYSTICK
+// ============================================================
+const jBase = document.getElementById('joystick-base');
+const jKnob = document.getElementById('joystick-knob');
+let jCenter = {x:0,y:0};
+
+function isMobile() { return 'ontouchstart' in window; }
+
+jBase.addEventListener('touchstart', e => {
+  e.stopPropagation(); e.preventDefault();
+  joystickActive = true;
+  const r = jBase.getBoundingClientRect();
+  jCenter = {x: r.left + r.width/2, y: r.top + r.height/2};
+}, {passive:false});
+
+document.addEventListener('touchmove', e => {
+  if (!joystickActive) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const dx = t.clientX - jCenter.x, dy = t.clientY - jCenter.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const maxR = 30;
+  const kx = dist > maxR ? dx/dist*maxR : dx;
+  const ky = dist > maxR ? dy/dist*maxR : dy;
+  jKnob.style.transform = `translate(calc(-50% + ${kx}px), calc(-50% + ${ky}px))`;
+  joystickDX = kx / maxR; joystickDY = ky / maxR;
+}, {passive:false});
+
+document.addEventListener('touchend', e => {
+  if (!joystickActive) return;
+  joystickActive = false; joystickDX = 0; joystickDY = 0;
+  jKnob.style.transform = 'translate(-50%,-50%)';
+});
+
+// ============================================================
+// ARTWORK MANAGEMENT
+// ============================================================
+function triggerCamera() { document.getElementById('file-camera').click(); }
+function triggerGallery() { document.getElementById('file-gallery').click(); }
+
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  closePanel('place-panel');
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingImage = e.target.result;
+    document.getElementById('popup-preview').src = pendingImage;
+    document.getElementById('popup-title').value = '';
+    document.getElementById('popup-desc').value = '';
+    document.getElementById('artwork-popup').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function confirmAddArtwork() {
+  if (!pendingImage) return;
+  const title = document.getElementById('popup-title').value.trim() || 'Sans titre';
+  const desc = document.getElementById('popup-desc').value.trim();
+  const id = 'art_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  const art = {
+    id, title, desc,
+    dataUrl: pendingImage,
+    placed: false, frameIdx: null,
+    addedAt: new Date().toLocaleDateString('fr-FR')
+  };
+  state.artworks.push(art);
+  saveState();
+  pendingImage = null;
+  closePopup();
+  showNotification('🎨 "' + title + '" ajouté à votre collection !');
+  broadcastGallery();
+  openPanel('collection-panel');
+  renderCollection();
+}
+
+function closePopup() {
+  document.getElementById('artwork-popup').style.display = 'none';
+  pendingImage = null;
+}
+
+let pendingFrameIdx = null;
+function openFramePicker(frameIdx) {
+  pendingFrameIdx = frameIdx;
+  // Show collection to pick from
+  openPanel('collection-panel');
+  renderCollection(true); // true = picking mode
+}
+
+function pickArtworkForFrame(artId) {
+  if (pendingFrameIdx === null) return;
+  // Unplace art if already on another frame
+  state.artworks.forEach(a => {
+    if (a.id === artId) { a.placed = true; a.frameIdx = pendingFrameIdx; }
+    // Remove from other frame if same frameIdx conflict
+  });
+  // Remove any other art at this frame
+  state.artworks.forEach(a => {
+    if (a.frameIdx === pendingFrameIdx && a.id !== artId) { a.placed = false; a.frameIdx = null; }
+  });
+  saveState();
+  pendingFrameIdx = null;
+  closePanel('collection-panel');
+  showNotification('🖼 Tableau accroché dans le musée !');
+  broadcastGallery();
+}
+
+function openArtworkDetail(artId) {
+  const art = state.artworks.find(a => a.id === artId);
+  if (!art) return;
+  detailArtworkId = artId;
+  document.getElementById('detail-img').src = art.dataUrl;
+  document.getElementById('detail-title').textContent = art.title || 'Sans titre';
+  document.getElementById('detail-desc').textContent = art.desc || '';
+  document.getElementById('detail-place-btn').style.display = (state.isOwner && !art.placed) ? 'block' : 'none';
+  document.getElementById('artwork-detail').style.display = 'flex';
+}
+
+function closeDetail() {
+  document.getElementById('artwork-detail').style.display = 'none';
+  detailArtworkId = null;
+}
+
+function placeArtworkFromDetail() {
+  if (!detailArtworkId) return;
+  closeDetail();
+  // Find first free frame
+  const usedIdx = state.artworks.filter(a=>a.placed).map(a=>a.frameIdx);
+  const freeIdx = FRAMES.findIndex((_,i) => !usedIdx.includes(i));
+  if (freeIdx >= 0) {
+    state.artworks.forEach(a => { if (a.id === detailArtworkId) { a.placed = true; a.frameIdx = freeIdx; }});
+    saveState(); broadcastGallery();
+    showNotification('🖼 Tableau accroché !');
+  } else {
+    showNotification('Tous les cadres sont occupés !');
+  }
+}
+
+function deleteArtworkFromDetail() {
+  if (!detailArtworkId) return;
+  if (!confirm('Supprimer ce tableau de votre collection ?')) return;
+  delete artImageCache[detailArtworkId];
+  state.artworks = state.artworks.filter(a => a.id !== detailArtworkId);
+  saveState(); broadcastGallery();
+  closeDetail();
+  showNotification('🗑 Tableau supprimé');
+}
+
+function renderCollection(pickingMode = false) {
+  const grid = document.getElementById('collection-grid');
+  grid.innerHTML = '';
+
+  if (!pickingMode && state.isOwner) {
+    const addCard = document.createElement('div');
+    addCard.className = 'add-artwork-card';
+    addCard.innerHTML = '<div class="plus">+</div><div>Ajouter une peinture</div>';
+    addCard.onclick = () => { closePanel('collection-panel'); openPanel('place-panel'); };
+    grid.appendChild(addCard);
+  }
+
+  state.artworks.forEach(art => {
+    const card = document.createElement('div');
+    card.className = 'artwork-card';
+    card.innerHTML = `
+      <img src="${art.dataUrl}" alt="${art.title}" loading="lazy">
+      <div class="card-info">
+        <div class="card-title">${art.title || 'Sans titre'}</div>
+        <div class="card-date">${art.addedAt || ''}</div>
+      </div>
+      ${art.placed ? '<div class="card-badge">🖼</div>' : ''}
+    `;
+    if (pickingMode && state.isOwner) {
+      card.onclick = () => pickArtworkForFrame(art.id);
+      card.style.cursor = 'pointer';
+      if (!art.placed) card.style.border = '2px solid rgba(201,168,76,0.5)';
+    } else {
+      card.onclick = () => openArtworkDetail(art.id);
+    }
+    grid.appendChild(card);
+  });
+
+  if (state.artworks.length === 0 && !pickingMode) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'color:#7A6040;font-size:14px;text-align:center;padding:40px;grid-column:1/-1;font-style:italic';
+    empty.textContent = 'Votre collection est vide. Commencez par photographier une peinture ! 🎨';
+    grid.appendChild(empty);
+  }
+}
+
+// ============================================================
+// MULTIPLAYER (BroadcastChannel + localStorage for demo)
+// ============================================================
+let roomId = null;
+let bc = null;
+let broadcastInterval = null;
+let myVisitorId = null;
+
+function initMultiplayer() {
+  // Read room from URL
+  const params = new URLSearchParams(window.location.search);
+  const room = params.get('room');
+  const asVisitor = params.get('visitor') === '1';
+
+  if (room) {
+    roomId = room;
+    if (asVisitor) {
+      state.isOwner = false;
+      state.playerId = 'visitor_' + Date.now();
+      state.playerName = 'Visiteur';
+      player.name = 'Visiteur';
+      player.color = '#6ABFE0';
+      player.emoji = '🌸';
+      myVisitorId = state.playerId;
+      // Load gallery from storage key
+      const ownerData = localStorage.getItem('musee_room_' + roomId);
+      if (ownerData) {
+        try {
+          const parsed = JSON.parse(ownerData);
+          state.artworks = parsed.artworks || [];
+          state.museumName = parsed.museumName || 'Musée';
+          state.artworks.forEach(a => { if (a.dataUrl) artImageCache[a.id] = null; }); // will load
+        } catch(e){}
+      }
+    }
+  } else {
+    roomId = 'room_' + Date.now() + '_' + Math.random().toString(36).substr(2,8);
+    // Push to URL (no reload)
+    window.history.replaceState({}, '', '?room=' + roomId);
+  }
+
+  // Generate share link
+  const shareUrl = window.location.origin + window.location.pathname + '?room=' + roomId + '&visitor=1';
+  document.getElementById('share-link-text').textContent = shareUrl;
+
+  // BroadcastChannel for same-device/tab (or local demo)
+  if (typeof BroadcastChannel !== 'undefined') {
+    bc = new BroadcastChannel('musee_' + roomId);
+    bc.onmessage = handleBroadcastMessage;
+  }
+
+  // Persist room gallery
+  if (state.isOwner) broadcastGallery();
+}
+
+function handleBroadcastMessage(e) {
+  const msg = e.data;
+  if (!msg || !msg.type) return;
+  if (msg.type === 'position' && msg.id !== state.playerId) {
+    visitors[msg.id] = {
+      x: msg.x, y: msg.y, angle: msg.angle,
+      name: msg.name || 'Visiteur', emoji: msg.emoji || '🌸',
+      isMoving: msg.isMoving, lastSeen: Date.now()
+    };
+    updateVisitorsList();
+  } else if (msg.type === 'gallery') {
+    if (!state.isOwner) {
+      state.artworks = msg.artworks || [];
+      state.museumName = msg.museumName || 'Musée';
+      document.getElementById('museum-name-label').textContent = '🏛 ' + state.museumName;
+    }
+  } else if (msg.type === 'chat') {
+    showChatBubble(msg.name || 'Quelqu\'un', msg.text, msg.id !== state.playerId);
+  }
+}
+
+let lastBroadcast = 0;
+function broadcastPosition() {
+  if (!bc) return;
+  const now = Date.now();
+  if (now - lastBroadcast < 100) return; // 10fps max
+  lastBroadcast = now;
+  bc.postMessage({
+    type: 'position', id: state.playerId,
+    x: player.x, y: player.y, angle: player.angle,
+    name: player.name, emoji: player.emoji, isMoving: player.isMoving
+  });
+  // Cleanup old visitors
+  Object.keys(visitors).forEach(id => {
+    if (Date.now() - visitors[id].lastSeen > 5000) delete visitors[id];
+  });
+}
+
+function broadcastGallery() {
+  if (state.isOwner) {
+    const data = { artworks: state.artworks, museumName: state.museumName };
+    if (roomId) localStorage.setItem('musee_room_' + roomId, JSON.stringify(data));
+    if (bc) bc.postMessage({ type: 'gallery', artworks: state.artworks, museumName: state.museumName });
+  }
+}
+
+function updateVisitorsList() {
+  const list = document.getElementById('visitors-list');
+  const vkeys = Object.keys(visitors);
+  document.getElementById('visitor-count').textContent = vkeys.length;
+  if (vkeys.length === 0) {
+    list.innerHTML = '<div style="color:#7A6040;font-size:13px;font-style:italic">Personne encore... Partagez le lien ! 🌟</div>';
+  } else {
+    list.innerHTML = vkeys.map(id => `
+      <div class="visitor-item">
+        <div class="visitor-avatar">${visitors[id].emoji || '🌸'}</div>
+        <div>
+          <div class="visitor-name">${visitors[id].name || 'Visiteur'}</div>
+          <div class="visitor-status">En visite actuellement</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function sendMsg(text) {
+  closePanel('messages-panel');
+  if (bc) bc.postMessage({ type:'chat', id: state.playerId, name: player.name, text });
+  showChatBubble(player.name, text, false);
+}
+
+function sendCustomMsg() {
+  const txt = document.getElementById('custom-msg').value.trim();
+  if (!txt) return;
+  document.getElementById('custom-msg').value = '';
+  sendMsg(txt);
+}
+
+function showChatBubble(name, text, isOther) {
+  const overlay = document.getElementById('chat-overlay');
+  overlay.style.display = 'flex';
+  const bub = document.createElement('div');
+  bub.className = 'chat-bubble';
+  bub.innerHTML = `<strong>${name}</strong>${text}`;
+  overlay.appendChild(bub);
+  setTimeout(() => { if (bub.parentNode) bub.parentNode.removeChild(bub); }, 5000);
+  setTimeout(() => { if (overlay.children.length === 0) overlay.style.display = 'none'; }, 5500);
+}
+
+// ============================================================
+// SHARE
+// ============================================================
+function copyShareLink() {
+  const link = document.getElementById('share-link-text').textContent;
+  navigator.clipboard?.writeText(link).then(() => showNotification('📋 Lien copié !'))
+    .catch(() => { const ta=document.createElement('textarea'); ta.value=link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showNotification('📋 Lien copié !'); });
+}
+
+function shareNative() {
+  const link = document.getElementById('share-link-text').textContent;
+  if (navigator.share) {
+    navigator.share({ title: '🎨 Visitez mon musée !', text: 'Venez voir mes peintures dans ma galerie virtuelle !', url: link });
+  } else { copyShareLink(); }
+}
+
+// ============================================================
+// PANELS
+// ============================================================
+function openPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  if (id === 'collection-panel') renderCollection();
+}
+function closePanel(id) { document.getElementById(id)?.classList.remove('active'); }
+
+// ============================================================
+// MUSIC
+// ============================================================
+let audioCtx = null, musicOn = false;
+function startMusic() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88];
+  const melody = [4,4,5,5,4,2,0, 4,4,3,3,2,2,0, 4,4,5,5,4,2,0];
+  let i = 0;
+  function playNote() {
+    if (!musicOn) return;
+    const n = notes[melody[i % melody.length]];
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = n;
+    g.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+    i++; setTimeout(playNote, 700);
+  }
+  musicOn = true; playNote();
+}
+function toggleMusic() {
+  musicOn = !musicOn;
+  document.getElementById('music-toggle').textContent = musicOn ? '🔇' : '🎵';
+  if (musicOn) startMusic();
+}
+
+// ============================================================
+// NOTIFICATION
+// ============================================================
+function showNotification(msg) {
+  const n = document.getElementById('notification');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2800);
+}
+
+// ============================================================
+// STARS (start screen)
+// ============================================================
+function initStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s`;
+    container.appendChild(s);
+  }
+}
+
+// ============================================================
+// RESIZE
+// ============================================================
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  player.x = canvas.width/2; player.y = canvas.height/2;
+}
+window.addEventListener('resize', resize);
+
+// ============================================================
+// INIT
+// ============================================================
+function startGame() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('gameCanvas').style.display = 'block';
+  document.getElementById('hud').style.display = 'block';
+  document.getElementById('hud-top').style.display = 'block';
+  document.getElementById('music-toggle').style.display = 'flex';
+  if (isMobile()) document.getElementById('joystick-container').style.display = 'block';
+  document.getElementById('museum-name-label').textContent = '🏛 ' + state.museumName;
+  startMusic();
+  initMultiplayer();
+  player.x = canvas.width/2; player.y = canvas.height/2;
+  lastTime = performance.now();
+  requestAnimationFrame(gameLoop);
+}
+
+window.addEventListener('load', () => {
+  resize();
+  loadState();
+  initStars();
+
+  // Check if visitor URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('visitor') === '1') {
+    document.getElementById('btn-visitor').click();
+    return;
+  }
+
+  // Loading → start screen
+  setTimeout(() => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'flex';
+  }, 2200);
+});
+
+document.getElementById('btn-new-game').onclick = () => {
+  state.isOwner = true; state.playerId = 'owner'; player.name = 'Maman'; player.emoji = '🎨';
+  startGame();
+};
+
+document.getElementById('btn-visitor').onclick = () => {
+  // Visitor mode
+  state.isOwner = false;
+  const params = new URLSearchParams(window.location.search);
+  const adjectives = ['Rose','Bleue','Verte','Dorée','Étoilée','Fleurie'];
+  const names = ['Papillon','Colombe','Étoile','Fleur','Lumière','Perle'];
+  player.name = adjectives[Math.floor(Math.random()*adjectives.length)] + ' ' + names[Math.floor(Math.random()*names.length)];
+  player.emoji = ['🌸','🌺','🌻','🦋','⭐','🌙','🍀'][Math.floor(Math.random()*7)];
+  startGame();
+};
+</script>
+</body>
+</html>
