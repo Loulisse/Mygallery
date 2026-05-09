@@ -11,7 +11,7 @@
   --gold:#C9A84C; --gold-l:#F0D080; --gold-d:#8B6520;
   --cream:#FFF8EE; --bg:#0D0805; --wall-warm:#8B5A2B;
   --burgundy:#6B2233; --teal:#1E6B6A;
-  --txt:#E8D5B0; --txt-dim:#9A7850;
+  --txt:#EDE0C4; --txt-dim:#C4A060;
   --panel-bg:rgba(8,4,2,0.96);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -32,7 +32,7 @@ body.moving #cursor::before{content:‘👣’}
 .ld-bar{width:220px;height:3px;background:#2A1A0A;border-radius:3px;overflow:hidden}
 .ld-fill{height:100%;background:linear-gradient(90deg,var(–gold-d),var(–gold-l));animation:lfill 2.4s ease forwards}
 @keyframes lfill{from{width:0}to{width:100%}}
-.ld-sub{color:var(–txt-dim);font-size:12px;letter-spacing:3px;text-transform:uppercase}
+.ld-sub{color:#C4A060;font-size:12px;letter-spacing:3px;text-transform:uppercase}
 
 /* ─── ONBOARDING OVERLAY ─── */
 #onboarding{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 40% 40%,#1C0E06 0%,#070301 100%);overflow:hidden}
@@ -51,14 +51,14 @@ body.moving #cursor::before{content:‘👣’}
 .ob-icon{font-size:52px;text-align:center}
 .ob-title{font-family:‘Playfair Display’,serif;font-size:clamp(20px,4vw,30px);color:var(–gold-l);text-align:center;line-height:1.3}
 .ob-title em{font-style:italic;color:var(–gold)}
-.ob-body{color:var(–txt-dim);font-size:14px;line-height:1.75;text-align:center}
+.ob-body{color:#C8A870;font-size:14px;line-height:1.75;text-align:center}
 .ob-input{width:100%;background:#0A0503;border:1px solid rgba(201,168,76,.3);color:var(–cream);padding:14px 16px;font-family:‘Quicksand’,sans-serif;font-size:16px;outline:none;border-radius:0;transition:border-color .2s}
 .ob-input:focus{border-color:var(–gold)}
-.ob-input::placeholder{color:rgba(201,168,76,.3)}
+.ob-input::placeholder{color:rgba(201,168,76,.5)}
 .emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 .emoji-opt{font-size:26px;padding:8px;background:rgba(201,168,76,.06);border:2px solid transparent;cursor:pointer;text-align:center;border-radius:4px;transition:all .15s}
 .emoji-opt.sel{border-color:var(–gold);background:rgba(201,168,76,.18)}
-.btn-primary{width:100%;padding:16px;border:none;background:linear-gradient(135deg,var(–gold-d) 0%,var(–gold-l) 50%,var(–gold-d) 100%);color:#1A0A02;font-family:‘Playfair Display’,serif;font-size:18px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:opacity .2s}
+.btn-primary{width:100%;padding:16px;border:none;background:linear-gradient(135deg,var(–gold-d) 0%,var(–gold-l) 50%,var(–gold-d) 100%);color:#0D0500;font-family:‘Playfair Display’,serif;font-size:18px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:opacity .2s}
 .btn-primary:hover{opacity:.9}
 .btn-secondary{width:100%;padding:12px;border:1px solid rgba(201,168,76,.35);background:transparent;color:var(–gold);font-family:‘Quicksand’,sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .2s}
 .btn-secondary:hover{background:rgba(201,168,76,.08)}
@@ -70,7 +70,7 @@ body.moving #cursor::before{content:‘👣’}
 .role-card:hover,.role-card.sel{border-color:var(–gold);background:rgba(201,168,76,.12)}
 .role-card .r-icon{font-size:32px;margin-bottom:8px}
 .role-card .r-name{color:var(–gold-l);font-size:14px;font-weight:600}
-.role-card .r-desc{color:var(–txt-dim);font-size:11px;margin-top:4px;line-height:1.4}
+.role-card .r-desc{color:#C4A060;font-size:11px;margin-top:4px;line-height:1.4}
 
 /* ─── CANVAS ─── */
 #gc{position:fixed;inset:0;display:none}
@@ -78,13 +78,13 @@ body.moving #cursor::before{content:‘👣’}
 /* ─── HUD TOP ─── */
 #hud-top{position:fixed;top:0;left:0;right:0;z-index:100;display:none;pointer-events:none}
 .hud-top-inner{display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
-.museum-badge{font-family:‘Cormorant Garamond’,serif;font-size:15px;color:var(–gold);background:rgba(8,4,2,.88);border:1px solid rgba(201,168,76,.3);padding:7px 14px;letter-spacing:.5px;font-style:italic;pointer-events:all;cursor:pointer;backdrop-filter:blur(8px)}
-.visitors-chip{pointer-events:all;background:rgba(8,4,2,.88);border:1px solid rgba(201,168,76,.25);color:var(–txt);padding:7px 14px;font-size:12px;cursor:pointer;letter-spacing:.5px;backdrop-filter:blur(8px)}
+.museum-badge{font-family:‘Cormorant Garamond’,serif;font-size:15px;color:#F0D080;background:rgba(8,4,2,.95);border:1px solid rgba(201,168,76,.3);padding:7px 14px;letter-spacing:.5px;font-style:italic;pointer-events:all;cursor:pointer;backdrop-filter:blur(8px)}
+.visitors-chip{pointer-events:all;background:rgba(8,4,2,.95);border:1px solid rgba(201,168,76,.4);color:#EDE0C4;padding:7px 14px;font-size:12px;cursor:pointer;letter-spacing:.5px;backdrop-filter:blur(8px)}
 
 /* ─── HUD BOTTOM ─── */
 #hud-bot{position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;pointer-events:none}
 .hud-bot-inner{display:flex;justify-content:space-around;align-items:center;padding:10px 10px 16px;gap:6px}
-.hb{pointer-events:all;background:rgba(8,4,2,.9);border:1px solid rgba(201,168,76,.3);color:var(–gold-l);font-family:‘Quicksand’,sans-serif;font-size:10px;padding:9px 10px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:58px;letter-spacing:.5px;backdrop-filter:blur(8px);transition:all .2s;user-select:none}
+.hb{pointer-events:all;background:rgba(8,4,2,.95);border:1px solid rgba(201,168,76,.45);color:#F5E0A0;font-family:‘Quicksand’,sans-serif;font-size:10px;padding:9px 10px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:58px;letter-spacing:.5px;backdrop-filter:blur(8px);transition:all .2s;user-select:none}
 .hb:hover,.hb:active{background:rgba(201,168,76,.15);border-color:var(–gold)}
 .hb .hi{font-size:20px}
 .hb.owner-only{display:none}
@@ -104,8 +104,8 @@ body.moving #cursor::before{content:‘👣’}
 .art-card img,.art-card .ac-empty{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
 .art-card .ac-empty{display:flex;align-items:center;justify-content:center;background:#1A0C06;font-size:32px;color:rgba(201,168,76,.15)}
 .ac-info{padding:9px 10px}
-.ac-title{color:var(–gold-l);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ac-date{color:var(–txt-dim);font-size:10px;margin-top:2px}
+.ac-title{color:#F5E0A0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-date{color:#B89050;font-size:10px;margin-top:2px}
 .ac-badge{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.75);color:var(–gold);font-size:14px;width:26px;height:26px;display:flex;align-items:center;justify-content:center}
 .add-card{border:2px dashed rgba(201,168,76,.25);aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:rgba(201,168,76,.4);font-size:12px;transition:all .2s;background:rgba(201,168,76,.03)}
 .add-card:hover{border-color:var(–gold);color:var(–gold);background:rgba(201,168,76,.08)}
@@ -125,37 +125,37 @@ body.moving #cursor::before{content:‘👣’}
 .ap-prev{width:100%;aspect-ratio:3/2;object-fit:cover;margin-bottom:14px;display:block;background:#1A0C06}
 .inp{width:100%;background:#0A0503;border:1px solid rgba(201,168,76,.28);color:var(–cream);padding:11px 14px;font-family:‘Quicksand’,sans-serif;font-size:14px;margin-bottom:10px;outline:none}
 .inp:focus{border-color:var(–gold)}
-.inp::placeholder{color:rgba(201,168,76,.28)}
+.inp::placeholder{color:rgba(201,168,76,.45)}
 
 /* ─── SHARE ─── */
 .link-box{background:#0A0503;border:1px solid rgba(201,168,76,.3);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .link-box span{flex:1;color:var(–gold);font-size:12px;word-break:break-all;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.copy-btn{background:var(–gold);color:#1A0A02;border:none;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0}
-.share-info{color:var(–txt-dim);font-size:13px;line-height:1.7;margin-bottom:16px}
+.copy-btn{background:var(–gold);color:#0D0500;border:none;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0}
+.share-info{color:#C8A870;font-size:13px;line-height:1.7;margin-bottom:16px}
 .vlist{display:flex;flex-direction:column;gap:8px}
 .vitem{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12)}
-.vi-av{font-size:22px}.vi-name{color:var(–gold-l);font-size:14px}.vi-st{color:var(–txt-dim);font-size:11px}
+.vi-av{font-size:22px}.vi-name{color:#F5E0A0;font-size:14px;font-weight:600}.vi-st{color:#C4A060;font-size:11px}
 
 /* ─── MESSAGES ─── */
 .msg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.msgbtn{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);color:var(–gold-l);padding:13px 8px;cursor:pointer;font-size:12px;font-family:‘Quicksand’,sans-serif;transition:all .2s;text-align:center;line-height:1.5}
+.msgbtn{background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.35);color:#F5E0A0;padding:13px 8px;cursor:pointer;font-size:12px;font-family:‘Quicksand’,sans-serif;transition:all .2s;text-align:center;line-height:1.5}
 .msgbtn:hover{background:rgba(201,168,76,.16);border-color:var(–gold)}
 .msgbtn .mi{font-size:20px;display:block;margin-bottom:5px}
 .textarea-inp{width:100%;min-height:72px;resize:none}
 
 /* ─── CHAT BUBBLES ─── */
-#chat-area{position:fixed;bottom:76px;right:12px;width:260px;z-index:300;display:flex;flex-direction:column;gap:5px;pointer-events:none}
-.cbub{background:rgba(8,4,2,.93);border:1px solid rgba(201,168,76,.3);padding:9px 12px;color:var(–cream);font-size:13px;animation:bIn .3s ease,bOut .4s 4.8s ease forwards;pointer-events:none}
+#chat-area{position:fixed;top:72px;right:12px;width:260px;z-index:350;display:flex;flex-direction:column;gap:5px;pointer-events:none}
+.cbub{background:rgba(8,4,2,.97);border:1px solid rgba(201,168,76,.5);padding:9px 12px;color:#F0E0C0;font-size:13px;animation:bIn .3s ease,bOut .4s 4.8s ease forwards;pointer-events:none;box-shadow:0 2px 12px rgba(0,0,0,.6)}
 .cbub strong{color:var(–gold);display:block;font-size:11px;margin-bottom:3px}
 @keyframes bIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes bOut{to{opacity:0}}
 
 /* ─── NPC DIALOG ─── */
-#npc-dialog{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(6,3,1,.95);border:1px solid rgba(201,168,76,.4);padding:12px 18px;max-width:300px;width:88%;display:none;font-family:‘Cormorant Garamond’,serif;font-style:italic;color:var(–cream);font-size:15px;text-align:center;animation:bIn .3s ease}
-#npc-dialog strong{display:block;color:var(–gold);font-style:normal;font-size:13px;margin-bottom:4px;font-family:‘Quicksand’,sans-serif;letter-spacing:.5px}
+#npc-dialog{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:400;background:rgba(6,3,1,.97);border:1px solid rgba(201,168,76,.6);border-radius:2px;padding:14px 20px;max-width:320px;width:88%;display:none;font-family:‘Cormorant Garamond’,serif;font-style:italic;color:#F5E8CC;font-size:15px;text-align:center;animation:bIn .3s ease;box-shadow:0 4px 32px rgba(0,0,0,.7);pointer-events:none}
+#npc-dialog strong{display:block;color:#F0D080;font-style:normal;font-size:12px;margin-bottom:5px;font-family:‘Quicksand’,sans-serif;letter-spacing:1px;text-transform:uppercase}
 
 /* ─── TOOLTIP ─── */
-#tip{position:fixed;background:rgba(6,3,1,.94);border:1px solid rgba(201,168,76,.5);color:var(–gold-l);padding:8px 14px;font-size:12px;z-index:200;pointer-events:none;display:none;font-family:‘Cormorant Garamond’,serif;font-style:italic;max-width:220px;text-align:center;letter-spacing:.3px}
+#tip{position:fixed;background:rgba(6,3,1,.97);border:1px solid rgba(201,168,76,.7);color:#F5E0A0;padding:8px 14px;font-size:12px;z-index:200;pointer-events:none;display:none;font-family:‘Cormorant Garamond’,serif;font-style:italic;max-width:220px;text-align:center;letter-spacing:.3px}
 
 /* ─── NOTIFICATION ─── */
 #notif{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-80px);background:rgba(6,3,1,.94);border:1px solid var(–gold);color:var(–gold-l);padding:10px 20px;z-index:900;font-size:13px;text-align:center;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap}
@@ -174,8 +174,8 @@ body.moving #cursor::before{content:‘👣’}
 
 /* ─── MISC ─── */
 .divider{height:1px;background:rgba(201,168,76,.15);margin:16px 0}
-.section-label{font-family:‘Playfair Display’,serif;color:var(–gold);font-size:15px;margin-bottom:10px}
-.empty-state{color:var(–txt-dim);font-size:13px;font-style:italic;text-align:center;padding:32px 0}
+.section-label{font-family:‘Playfair Display’,serif;color:#F0D080;font-size:15px;margin-bottom:10px;font-weight:600}
+.empty-state{color:#C4A060;font-size:13px;font-style:italic;text-align:center;padding:32px 0}
 </style>
 
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJgAAACYCAYAAAAYwiAhAAAIxUlEQVR4nO2dsa4VNxCGBxRRUaRGiqIUEYgqBaIiERVFCqT7AlT3DdJEpEkTlCZvQMULIFGkoEIJFaJGoBRRFIknoKIhRWS07FmvZ+yx5x/vfBLNuYdde/zd8ayvd/cCBR+5cvnSB43jvH33/oLGcWbgkIHQEknKEcU7RIethCpxBOGm7CCqUCVmFG6aDmlJ9fjhnab/f3b+VKMZ08jmvhM1YrVKVEuNfN5Fc9l4qVRWQpWQCudRNlcNloiFKlUOiWyeRHPRUK5YGlK11lAj2+BBNOgG9hRLqxjn0rONyKLBNqwkl3TARgtVQrv9qJLBNUpLLDShSmj1C000mMYcVaw1s4kG0Yg9uTgB9y5Vjta+I0hm3oAWuWYVa01LHKwlMzt5iCXHo2gmJ62V66hiramNkYVkw0+YkyvEklMTs9GSDTtZZK0+1Mbu1fP7J599/s3P6j4MEaxGrhBLhiSOW3IltCXrLlhMiePgxHRProSmZF0Fk8oVYumQi+/VazfYx9CS7KLGQbYIuexAimUXwUIue1Bi+pn2ASVyoQRhVlJ8LTdfqmawkAuTs/OnovpLEzXBQi5cOFeOS67feqB27m5FPlHIhYClXERKgm1lr5DLnha5tO4zbS7yQy5M9uS6fusBq/C/cvnSh9a/XTZlsJALk5JcRNtjsjV2rZmsaw1GFHKNhiNXYsTYVAvGzV7BGF49vy+SK4d2FqsSLKZGLErF/J5cvadKsWAhFxYtciV6StalBgu5xqAhV6LXmIkEi7oLh1K9pbFgqpHFRGsc64PPPDUiP+9Co5jPwRlTydoY+4uc7OVVrp5ZWDsmPeVKcMaVKxnrS7MV9pbTekuMRshFxB9bjmRVgnmVC6lelMRLs5jnojVVFr/gfWpEkiqH9PayJT3kSmhMleJlCg8DRvR/O7231VKuLWriuSsY55IULXt5EmvNsu0IcnHGtuSIKIOhDxx6+7iMWOOqRRrjrGCespfnrLVmb++8hVitWYydwVAHELVdNaDJlUMS8+q/RSJkr1nkunrtxq5cb16/HNiaU1rGenPLNPrLpGYRi6h8O3+SK/UZ4Rd7i9z2alYGQ1r3OqJcS1Des8Rtx4lgyNnr6HIlUOOw5U4xg6F0BqUdWuQEevP6JavmQogHpw3iIt9iekQI5gikxfzouNSM/SeCIU6PM8u1FKr2ShEtPmuHdjOYdXGPFrxetC5DjIyTtNjvfl9ksI/1GldvYAU7SvbSAjVeHwXjbCocBWqw0LGK2/q8S5fYGWxU/RVytTEifhIXYKfIYA6gBIvspQNSHC8QYdzUwVkSQQqcB3qOGfemEFYGG7n+dXb+NHu+vZ8FY+GOA8QUKd2KEpLxQMj4EIIRyaUJyXxgLtjjh3eqZQnJylhnMXPBgrm5aL2DojULRRbD5crlSx9OMtjIHRTW6fso9IozZ2dFTJFBV8wEi+w1Fqt4RwYLumIuWOtvVmRCbMwFC+bGRLB11qnNQpG9ZFjECyaDSTsfcvkARjAivjQhlx/UXwrfyt7OihDLH3CCJUKmORg+RYY4toyOP1QNFsxHCBZ0JQQLuhKCBV05Eaz2UYnB8eDsHbwoefdfEEhg3xcZBLWEYEFXYFfyA6Kbf3558tmLb/8xaEk9kcFA2ZJr73NUql7EEPSlJBGCZKIXMayvJONeQzu48iBItiT3uuXhU2TIm0cqTY1ko+MfNVjQFffviwzGI3Hh4zLF23fvLyyfU3F2/tSFVL998f3JZz/8+7tBS45Lrv4icj5Fbsm193kwHhPBNArNkkQeJZMuokq/b3GBtSsY6s4KrjwzS2a1oi99+tIngnnYWSGVZkbJkP9ctHZIPEWiZLHZyUlkKVfN2Bf/2N3ratLLVaolmjL1qL84xzzJYB6myQCTLXc2Zdp6bmuvR2tKs1hNTYW2LvbL1z+efPbTX792O5/GWHHGf0uwzRoMOYtJZfEg197nXsg5U70OZlk/caXxIhf351a0jLX5+yJrj1uSx5tc0u9xsSruE1nBONOk9VVgTqKSXE+ePTr51xOpNEiZjDPGe66I9uQjLllIM1VOpifPHtHd2/eq2oCKdfYiKkyRHrKYhFKm4maym999dfJvRlqzF1FFkY9Wi3HhylP6Xk4mNMkQshcRQ7CRWayXZNIaK/f9kkQokvVY99qC40bVMsURH2/JlWfre9JF1J6Lrhw0X6nNEmzLVK9TZQ3SzNQiWatco6ZG7mI8O4PNMFVaU5IHQS6tqTHRtKO151R5NMlQ5Wo9rmgdbH1jSGoAev119/Y9UaHfez3Musbi0jI1JrrsyUfMYlxpPC62jpoaaxALxi34PUqW+/mLP/4WnUf6/RZGTo01u2yqMtiMkpXk40oTcn1K076vkRsTt45twd6ShTe5iOo3EnLpfl+kphQIV5Y5iWaQqwfNO1c5WYxovkxmRU+5tLMXkYJgRDaS5c4xK71/QXvIRaQ0RY4u+vfOMSNe5SLqXIOFZO1YyKWJ6t1DW1Ml0biOzTRljigncufQvKtMNYPlGjZqe88s2WwWuYiUM1hCksmIIpslRl0EjZKLqJNgRBiS7Z0PiZG/YCPlIuooGBGOZKXzWtCzryhyEXUWjEguGdHcolmItXfe3o+JGPIMipxkRHbZjNMGDUb1oyaOI55BMuwhJzWSEdldGdZIZ9HW2tiNesDN8KfoIE6ZXkGcEteYPKbJWzZDAz1rLTF7DlitZETHFa0lLlbPfDN/0FyIVsajWAlzwYjaJCOaV7TWvlvLRQQiGNG+ZET8qzrvsmn1E0EuIiDBEkcVbTaxElCNWaIlWgJNOO32o4mVgGxUoiRZwsOiaM82ospFBC5Yoqdoa1rFG9kGZLES8A1cwhWNCGvnBAeJ2B7ESrhp6BKJaES4skmzpSexEu4avEYqG5GdcDXTr0eplrhu/JIa0bZolU/r4sG7WIkpOrFGS7bRzCLVkuk6tAWqcDMKtWb6Dm5hJdwRhFpzuA7voSXeEUXK8R/dmy+TZyv2FAAAAABJRU5ErkJggg==">
@@ -361,7 +361,7 @@ body.moving #cursor::before{content:‘👣’}
   <div class="pc" style="display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;height:100%">
     <div style="font-size:72px">🎨</div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-l);text-align:center">Photographiez votre peinture</div>
-    <div style="color:var(--txt-dim);font-size:13px;text-align:center;line-height:1.7;max-width:260px">Prenez votre tableau en photo ou choisissez une image dans votre galerie. Il sera encadré et accroché dans votre musée !</div>
+    <div style="color:#C8A870;font-size:13px;text-align:center;line-height:1.7;max-width:260px">Prenez votre tableau en photo ou choisissez une image dans votre galerie. Il sera encadré et accroché dans votre musée !</div>
     <button class="btn-primary" style="max-width:270px" onclick="trigCam()">📷 Prendre une photo</button>
     <button class="btn-secondary" style="max-width:270px" onclick="trigGal()">🖼 Depuis ma galerie</button>
   </div>
@@ -394,7 +394,7 @@ body.moving #cursor::before{content:‘👣’}
 <div id="art-detail">
   <div class="ph"><div class="ph-title" id="ad-title">Tableau</div><button class="ph-close" onclick="closeDetail()">✕</button></div>
   <div class="ad-img"><img id="ad-img" src="" alt=""></div>
-  <div style="padding:0 18px 6px;color:var(--txt-dim);font-size:13px;font-style:italic;font-family:'Cormorant Garamond',serif" id="ad-desc"></div>
+  <div style="padding:0 18px 6px;color:#C8A870;font-size:14px;font-style:italic;font-family:'Cormorant Garamond',serif" id="ad-desc"></div>
   <div class="ad-foot">
     <button class="btn-secondary" id="ad-place" onclick="placeFromDetail()" style="font-size:11px">🏛 Placer</button>
     <button class="btn-secondary" id="ad-remove" onclick="removeFromFrame()" style="font-size:11px;display:none">📤 Décrocher</button>
@@ -616,402 +616,506 @@ function getImg(art){
 //  DRAWING
 // ════════════════════════════════════════════════════════
 
+
+// ════════════════════════════════════════════════════════
+//  PRE-BAKED PLANT LEAF COLORS (no random each frame)
+// ════════════════════════════════════════════════════════
+const LEAF_PALETTES=[
+  ['#246B3A','#2E8B48','#1A5C2E','#348A50','#206840'],
+  ['#1A6B35','#268B42','#155C28','#308A48','#1A6038'],
+  ['#286B3E','#328B50','#1E5C32','#388A54','#246040'],
+];
+const PLANT_LEAF_DATA=[];
+(function(){
+  const configs=[
+    [-10,-5,14,20,-0.35],[10,0,13,22,0.45],[0,-14,11,24,0],
+    [-5,-22,10,18,-0.15],[6,-20,10,18,0.2]
+  ];
+  for(let p=0;p<30;p++){
+    const pal=LEAF_PALETTES[p%3];
+    PLANT_LEAF_DATA.push(configs.map(([lx,ly,rx,ry,rot],i)=>({lx,ly,rx,ry,rot,col:pal[i%pal.length]})));
+  }
+})();
+
+// ════════════════════════════════════════════════════════
+//  DIRECTION HELPER  (4-dir: 0=down 1=left 2=right 3=up)
+// ════════════════════════════════════════════════════════
+function getDir(angle){
+  // angle: atan2(dy,dx), 0=right, PI/2=down
+  const a=((angle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+  // Prefer cardinal: right<45° or >315° → right(2), etc.
+  if(a<Math.PI*0.25||a>=Math.PI*1.75) return 2; // right
+  if(a<Math.PI*0.75) return 0;  // down
+  if(a<Math.PI*1.25) return 1;  // left
+  return 3; // up
+}
+
+// ════════════════════════════════════════════════════════
+//  FLOOR
+// ════════════════════════════════════════════════════════
 function drawFloor(){
-  // Parquet tiles with herringbone-ish feel
-  const tw=90,th=90;
+  const tw=90,th=45; // squashed tiles for top-down perspective
   for(let ty=0;ty*th<WH;ty++){
     for(let tx=0;tx*tw<WW;tx++){
       const even=(tx+ty)%2===0;
-      ctx.fillStyle=even?'#5E3414':'#6E4220';
+      ctx.fillStyle=even?'#5E3414':'#6B3C1C';
       ctx.fillRect(tx*tw,ty*th,tw,th);
-      ctx.strokeStyle=even?'#4A2A0E':'#5A3418';
-      ctx.lineWidth=.5;
-      // Planks
-      for(let g=8;g<tw;g+=18){ ctx.beginPath();ctx.moveTo(tx*tw+g,ty*th);ctx.lineTo(tx*tw+g,ty*th+th);ctx.stroke(); }
+      // Subtle grain
+      ctx.strokeStyle=even?'#4A2A0E':'#573214';
+      ctx.lineWidth=0.4;
+      for(let g=12;g<tw;g+=18){
+        ctx.beginPath();ctx.moveTo(tx*tw+g,ty*th);ctx.lineTo(tx*tw+g,ty*th+th);ctx.stroke();
+      }
     }
   }
-  // Central ornate carpet
-  // Outer carpet
+  // Carpet runner
   ctx.fillStyle='#1E3D6A';
-  ctx.fillRect(155,390,WW-310,260);
-  // Carpet border layers
-  const borders=[[158,393,WW-316,254,'#C9A84C'],[168,403,WW-336,234,'#1A3560'],[178,413,WW-356,214,'#C9A84C33']];
-  borders.forEach(([x,y,w,h,c])=>{ ctx.strokeStyle=c;ctx.lineWidth=c.length>7?1:2;ctx.strokeRect(x,y,w,h); });
-  // Carpet diamond pattern
-  ctx.fillStyle='rgba(201,168,76,0.18)';
-  for(let dx=200;dx<WW-180;dx+=64){
-    ctx.save();ctx.translate(dx,520);ctx.rotate(Math.PI/4);ctx.fillRect(-16,-16,32,32);ctx.restore();
+  ctx.fillRect(155,400,WW-310,200);
+  ctx.strokeStyle='#C9A84C';ctx.lineWidth=2;
+  ctx.strokeRect(158,403,WW-316,194);
+  ctx.strokeRect(166,411,WW-332,178);
+  ctx.strokeStyle='rgba(201,168,76,0.2)';ctx.lineWidth=1;
+  for(let dx=200;dx<WW-180;dx+=56){
+    ctx.save();ctx.translate(dx,500);ctx.rotate(Math.PI/4);ctx.strokeRect(-12,-12,24,24);ctx.restore();
   }
-  // Carpet center medallion
-  ctx.save();ctx.translate(WW/2,520);
-  const mg=ctx.createRadialGradient(0,0,10,0,0,90);
-  mg.addColorStop(0,'rgba(201,168,76,0.25)'); mg.addColorStop(1,'rgba(201,168,76,0)');
-  ctx.fillStyle=mg; ctx.beginPath();ctx.arc(0,0,90,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,60,0,Math.PI*2);ctx.stroke();
+  // Medallion
+  ctx.save();ctx.translate(WW/2,500);
+  const mg=ctx.createRadialGradient(0,0,8,0,0,80);
+  mg.addColorStop(0,'rgba(201,168,76,0.22)');mg.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.fillStyle=mg;ctx.beginPath();ctx.arc(0,0,80,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(201,168,76,0.25)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,55,0,Math.PI*2);ctx.stroke();
   ctx.restore();
 }
 
+// ════════════════════════════════════════════════════════
+//  WALLS  — top-down with perspective "thickness"
+// ════════════════════════════════════════════════════════
 function drawWalls(){
-  // North+South wall band color
-  ctx.fillStyle='#6B4020';
-  ctx.fillRect(70,0,WW-140,200);         // N upper wall
-  ctx.fillRect(70,WH-200,WW-140,200);    // S lower wall
-  ctx.fillStyle='#7A4A25';
-  ctx.fillRect(0,0,70,WH);              // W wall
-  ctx.fillRect(WW-70,0,70,WH);          // E wall
+  // ── North wall (top): drawn as a horizontal band with a lit top face
+  // Back face (ceiling colour)
+  ctx.fillStyle='#3A1E08';
+  ctx.fillRect(0,0,WW,70);
+  // Front face (wall colour, warm)
+  ctx.fillStyle='#8B5228';
+  ctx.fillRect(0,70,WW,120);
+  // Skirting board gold
+  ctx.fillStyle='#C9A84C';ctx.fillRect(0,188,WW,4);
+  ctx.fillRect(0,68,WW,4);
 
-  // Wainscoting baseboard gold line
-  ctx.fillStyle='#C9A84C';
-  ctx.fillRect(70,66,WW-140,5);
-  ctx.fillRect(70,WH-71,WW-140,5);
-  ctx.fillRect(67,70,5,WH-140);
-  ctx.fillRect(WW-72,70,5,WH-140);
+  // ── South wall: only front face visible (player is north of it)
+  ctx.fillStyle='#7A4820';
+  ctx.fillRect(0,WH-110,WW,110);
+  ctx.fillStyle='#C9A84C';ctx.fillRect(0,WH-112,WW,4);
 
-  // Upper wall panels (N and S)
-  ctx.strokeStyle='rgba(201,168,76,0.5)'; ctx.lineWidth=1.5;
-  const panelH=120;
-  for(let px=110;px<WW-100;px+=180){
-    // North
-    ctx.strokeRect(px,76,140,panelH);
-    ctx.strokeRect(px+8,84,124,104);
-    // South
-    ctx.strokeRect(px,WH-panelH-76,140,panelH);
-    ctx.strokeRect(px+8,WH-panelH-68,124,104);
+  // ── West wall (left)
+  ctx.fillStyle='#8B5228';ctx.fillRect(0,70,60,WH-180);
+  ctx.fillStyle='#3A1E08';ctx.fillRect(0,0,60,70); // top corner
+  ctx.fillStyle='#C9A84C';ctx.fillRect(58,70,4,WH-180);
+
+  // ── East wall (right)
+  ctx.fillStyle='#8B5228';ctx.fillRect(WW-60,70,60,WH-180);
+  ctx.fillStyle='#3A1E08';ctx.fillRect(WW-60,0,60,70);
+  ctx.fillStyle='#C9A84C';ctx.fillRect(WW-62,70,4,WH-180);
+
+  // ── North wall decorative panels
+  ctx.strokeStyle='rgba(201,168,76,0.55)';ctx.lineWidth=1.5;
+  for(let px=100;px<WW-80;px+=180){
+    ctx.strokeRect(px,76,150,105);
+    ctx.strokeRect(px+8,84,134,89);
   }
-  // W/E wall panels
-  for(let py=90;py<WH-100;py+=180){
-    ctx.strokeRect(8,py,46,140);
-    ctx.strokeRect(14,py+8,34,124);
-    ctx.strokeRect(WW-54,py,46,140);
-    ctx.strokeRect(WW-48,py+8,34,124);
+  // South wall panels
+  for(let px=100;px<WW-80;px+=180){
+    ctx.strokeRect(px,WH-108,150,95);
+    ctx.strokeRect(px+8,WH-100,134,79);
+  }
+  // West panels
+  for(let py=110;py<WH-120;py+=180){
+    ctx.strokeRect(6,py,46,130);ctx.strokeRect(12,py+8,34,114);
+  }
+  // East panels
+  for(let py=110;py<WH-120;py+=180){
+    ctx.strokeRect(WW-52,py,46,130);ctx.strokeRect(WW-46,py+8,34,114);
   }
 }
 
+// ════════════════════════════════════════════════════════
+//  CHANDELIER  — ceiling fixture
+// ════════════════════════════════════════════════════════
 function drawChandelier(x,y){
+  // Warm cone of light on floor
+  const lg=ctx.createRadialGradient(x,y+380,10,x,y+380,220);
+  lg.addColorStop(0,'rgba(255,240,180,0.13)');lg.addColorStop(1,'rgba(255,240,180,0)');
+  ctx.fillStyle=lg;ctx.beginPath();ctx.arc(x,y+380,220,0,Math.PI*2);ctx.fill();
   // Chain
-  ctx.strokeStyle='#C9A84C'; ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+50);ctx.stroke();
-  // Halo glow
-  const hg=ctx.createRadialGradient(x,y+120,10,x,y+120,140);
-  hg.addColorStop(0,'rgba(255,240,180,0.18)');hg.addColorStop(1,'rgba(255,240,180,0)');
-  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(x,y+120,140,0,Math.PI*2);ctx.fill();
-  // Ring
-  ctx.strokeStyle='#C9A84C';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y+60,28,0,Math.PI*2);ctx.stroke();
-  // Candles
-  for(let i=0;i<8;i++){
-    const a=(i/8)*Math.PI*2;
-    const cx=x+Math.cos(a)*24,cy=y+60+Math.sin(a)*6;
-    ctx.fillStyle='#FFF8DC';ctx.fillRect(cx-2,cy-10,4,14);
+  ctx.strokeStyle='#C9A84C';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+40);ctx.stroke();
+  // Arm ring
+  ctx.strokeStyle='#C9A84C';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y+52,26,0,Math.PI*2);ctx.stroke();
+  // 6 candle arms
+  for(let i=0;i<6;i++){
+    const a=(i/6)*Math.PI*2;
+    const ax=x+Math.cos(a)*22, ay=y+52+Math.sin(a)*6;
+    // Candle
+    ctx.fillStyle='#FFF8DC';ctx.fillRect(ax-2,ay-10,4,12);
     // Flame
-    ctx.fillStyle='#FFD700';ctx.beginPath();ctx.ellipse(cx,cy-14,2.5,5,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='rgba(255,200,50,0.35)';ctx.beginPath();ctx.arc(cx,cy-12,7,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,200,50,0.4)';ctx.beginPath();ctx.arc(ax,ay-13,6,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#FFD700';ctx.beginPath();ctx.ellipse(ax,ay-15,2,4,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#FFF';ctx.beginPath();ctx.ellipse(ax,ay-16,1,2,0,0,Math.PI*2);ctx.fill();
   }
 }
 
-function drawPlant(x,y){
-  // Pot
-  ctx.fillStyle='#7A3D12';
-  ctx.beginPath();ctx.moveTo(x-16,y+32);ctx.lineTo(x+16,y+32);ctx.lineTo(x+13,y+55);ctx.lineTo(x-13,y+55);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#5A2D0E';ctx.fillRect(x-17,y+27,34,8);
-  // Leaves
-  [[-10,-5,14,20,-.35],[10,0,13,22,.45],[0,-14,11,24,0],[-5,-22,10,18,-.15],[6,-20,10,18,.2]].forEach(([lx,ly,rx,ry,rot])=>{
-    ctx.save();ctx.translate(x+lx,y+ly);ctx.rotate(rot);
-    ctx.fillStyle=['#246B3A','#2E8B48','#1A5C2E','#348A50','#266040'][Math.floor(Math.random()*5+0)%5];
-    ctx.beginPath();ctx.ellipse(0,0,rx/2,ry/2,0,0,Math.PI*2);ctx.fill();ctx.restore();
+// ════════════════════════════════════════════════════════
+//  PLANT  — top-down pot + leaves fanning outward
+// ════════════════════════════════════════════════════════
+function drawPlant(x,y,leafIdx){
+  const ld=PLANT_LEAF_DATA[leafIdx%PLANT_LEAF_DATA.length];
+  // Shadow oval
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.ellipse(x,y+6,18,7,0,0,Math.PI*2);ctx.fill();
+  // Pot — top-down: just a small circle with perspective ellipse
+  ctx.fillStyle='#6B3010';ctx.beginPath();ctx.ellipse(x,y+2,12,6,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#8B4018';ctx.beginPath();ctx.ellipse(x,y-1,12,6,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#3A1808';ctx.lineWidth=1;ctx.stroke();
+  // Leaves radiating out
+  ld.forEach(l=>{
+    ctx.save();ctx.translate(x+l.lx*0.6,y+l.ly*0.5);ctx.rotate(l.rot);
+    ctx.fillStyle=l.col;
+    ctx.beginPath();ctx.ellipse(0,0,l.rx/2,l.ry/3,0,0,Math.PI*2);ctx.fill();
+    ctx.restore();
   });
-  // Flower
-  for(let i=0;i<5;i++){
-    const a=(i/5)*Math.PI*2;
-    ctx.fillStyle='#FFD93D';ctx.beginPath();ctx.ellipse(x+Math.cos(a)*5,y-28+Math.sin(a)*5,4,4,0,0,Math.PI*2);ctx.fill();
-  }
-  ctx.fillStyle='#FF6B35';ctx.beginPath();ctx.arc(x,y-28,4,0,Math.PI*2);ctx.fill();
+  // Centre bud
+  ctx.fillStyle='#FF6B35';ctx.beginPath();ctx.arc(x,y-6,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#FFD93D';ctx.beginPath();ctx.arc(x,y-6,1.5,0,Math.PI*2);ctx.fill();
 }
 
+// ════════════════════════════════════════════════════════
+//  BENCH  — top-down view (seen from above)
+// ════════════════════════════════════════════════════════
 function drawBench(x,y){
-  // Legs
-  ctx.fillStyle='#4A2E0E';
-  [[x-38,y+14],[x+30,y+14]].forEach(([lx,ly])=>{ ctx.fillRect(lx,ly,8,20); });
-  // Seat wooden slats
-  [0,6,12].forEach(s=>{ ctx.fillStyle=s%12===0?'#6B3C18':'#7A4A22'; ctx.fillRect(x-44,y+8+s,88,5); });
-  // Cushion
-  ctx.fillStyle='#1A3D7A';
-  ctx.fillRect(x-42,y+6,84,8);
-  ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1;ctx.strokeRect(x-42,y+6,84,8);
-  // Back rest
-  ctx.fillStyle='#4A2E0E';
-  ctx.fillRect(x-44,y-12,88,8);
-  [x-38,x-10,x+18].forEach(px=>{ ctx.fillRect(px,y-12,5,20); });
-}
-
-function drawPillar(x,y){
   // Shadow
-  ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.ellipse(x+6,y+6,18,8,0,0,Math.PI*2);ctx.fill();
-  // Shaft
-  const g=ctx.createLinearGradient(x-15,0,x+15,0);
-  g.addColorStop(0,'#5A3A1A');g.addColorStop(.3,'#C4A07A');g.addColorStop(.6,'#D4B090');g.addColorStop(1,'#5A3A1A');
-  ctx.fillStyle=g;ctx.fillRect(x-15,y-180,30,180);
-  // Fluting lines
-  ctx.strokeStyle='rgba(80,40,10,.4)';ctx.lineWidth=1;
-  for(let i=-10;i<=10;i+=5){ ctx.beginPath();ctx.moveTo(x+i,y-180);ctx.lineTo(x+i,y);ctx.stroke(); }
-  // Capital
-  const cg=ctx.createLinearGradient(x-22,0,x+22,0);
-  cg.addColorStop(0,'#9A7A40');cg.addColorStop(.5,'#F0D080');cg.addColorStop(1,'#9A7A40');
-  ctx.fillStyle=cg;ctx.fillRect(x-22,y-185,44,12);
-  ctx.fillRect(x-18,y-196,36,14);
-  // Base
-  ctx.fillStyle=cg;ctx.fillRect(x-22,y-4,44,10);ctx.fillRect(x-18,y+5,36,8);
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(x-44,y+4,88,16);
+  // Seat top face (what you see from above)
+  ctx.fillStyle='#5C3018';ctx.fillRect(x-42,y-10,84,18);
+  // Slat lines
+  ctx.strokeStyle='#3A1E0C';ctx.lineWidth=1;
+  for(let s=0;s<84;s+=14){ ctx.beginPath();ctx.moveTo(x-42+s,y-10);ctx.lineTo(x-42+s,y+8);ctx.stroke(); }
+  // Front face (perspective side facing player)
+  ctx.fillStyle='#3A1E0C';ctx.fillRect(x-42,y+8,84,8);
+  // Cushion on top
+  ctx.fillStyle='#1A3D7A';ctx.fillRect(x-38,y-8,76,14);
+  ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1;ctx.strokeRect(x-38,y-8,76,14);
+  // Legs (front face, visible below seat)
+  ctx.fillStyle='#2A1008';
+  ctx.fillRect(x-40,y+16,8,6);ctx.fillRect(x+32,y+16,8,6);
 }
 
+// ════════════════════════════════════════════════════════
+//  PILLAR  — proper top-down perspective column
+// ════════════════════════════════════════════════════════
+function drawPillar(x,y){
+  const W=28,H=130; // width, visual height upward
+  // Shadow on floor
+  ctx.fillStyle='rgba(0,0,0,0.35)';ctx.beginPath();ctx.ellipse(x+5,y+8,W/2+4,10,0,0,Math.PI*2);ctx.fill();
+  // Base moulding — bottom (front face visible)
+  ctx.fillStyle='#8B7040';ctx.fillRect(x-W/2-4,y+4,W+8,10);
+  ctx.fillStyle='#C9A84C';ctx.fillRect(x-W/2-4,y+4,W+8,3);
+  // Shaft — main column with gradient (left=shadow, right=highlight)
+  const sg=ctx.createLinearGradient(x-W/2,0,x+W/2,0);
+  sg.addColorStop(0,'#4A2E10');sg.addColorStop(0.25,'#B8906A');sg.addColorStop(0.55,'#D4B08A');sg.addColorStop(0.8,'#BCA070');sg.addColorStop(1,'#4A2E10');
+  ctx.fillStyle=sg;ctx.fillRect(x-W/2,y-H,W,H+4);
+  // Fluting lines on shaft
+  ctx.strokeStyle='rgba(50,25,5,0.3)';ctx.lineWidth=1;
+  for(let i=-10;i<=10;i+=6){ ctx.beginPath();ctx.moveTo(x+i,y-H);ctx.lineTo(x+i,y+4);ctx.stroke(); }
+  // Capital — top face (horizontal, seen from above = ellipse)
+  const cg=ctx.createLinearGradient(x-W/2-6,0,x+W/2+6,0);
+  cg.addColorStop(0,'#8A6820');cg.addColorStop(0.4,'#F0D080');cg.addColorStop(0.7,'#C9A84C');cg.addColorStop(1,'#8A6820');
+  ctx.fillStyle=cg;ctx.fillRect(x-W/2-6,y-H-10,W+12,14);
+  ctx.fillRect(x-W/2-4,y-H-16,W+8,8);
+  // Top face highlight (ellipse = top of capital seen from above)
+  ctx.fillStyle='rgba(240,208,128,0.4)';ctx.beginPath();ctx.ellipse(x,y-H-12,W/2+4,4,0,0,Math.PI*2);ctx.fill();
+}
+
+// ════════════════════════════════════════════════════════
+//  STATUE  — top-down perspective pedestal + figure
+// ════════════════════════════════════════════════════════
 function drawStatue(x,y){
-  // Pedestal
-  const pg=ctx.createLinearGradient(x-24,0,x+24,0);
-  pg.addColorStop(0,'#7A6858');pg.addColorStop(.5,'#C0B098');pg.addColorStop(1,'#7A6858');
-  ctx.fillStyle=pg;
-  ctx.fillRect(x-22,y+10,44,60);
-  ctx.fillRect(x-26,y+6,52,8);ctx.fillRect(x-26,y+68,52,8);
-  // Sculpted figure (abstract woman)
+  const PW=40,PH=55;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.ellipse(x+4,y+PH/2,PW/2+6,12,0,0,Math.PI*2);ctx.fill();
+  // Pedestal front face
+  const pf=ctx.createLinearGradient(x-PW/2,0,x+PW/2,0);
+  pf.addColorStop(0,'#6A5848');pf.addColorStop(0.4,'#B0A090');pf.addColorStop(1,'#6A5848');
+  ctx.fillStyle=pf;ctx.fillRect(x-PW/2,y-PH,PW,PH);
+  // Pedestal top (seen slightly from above)
+  ctx.fillStyle='#C8B8A8';ctx.beginPath();ctx.ellipse(x,y-PH,PW/2+2,6,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#8A7860';ctx.lineWidth=1;ctx.stroke();
+  // Pedestal base
+  ctx.fillStyle='#8A7860';ctx.fillRect(x-PW/2-3,y-4,PW+6,8);
+  // Figure — simple elegant silhouette (top-down means we see it head-on)
   ctx.fillStyle='#D8C8B0';
-  // Robe base
-  ctx.beginPath();ctx.ellipse(x,y-12,14,30,0,0,Math.PI*2);ctx.fill();
+  // Robe (wide at bottom, narrow top)
+  ctx.beginPath();ctx.moveTo(x-14,y-PH);ctx.lineTo(x+14,y-PH);ctx.lineTo(x+9,y-PH-52);ctx.lineTo(x-9,y-PH-52);ctx.closePath();ctx.fill();
   // Torso
-  ctx.beginPath();ctx.ellipse(x,y-40,10,18,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(x,y-PH-52,8,14,0,0,Math.PI*2);ctx.fill();
   // Head
-  ctx.beginPath();ctx.arc(x,y-62,9,0,Math.PI*2);ctx.fill();
-  // Hair bun
-  ctx.fillStyle='#B8A890';ctx.beginPath();ctx.arc(x,y-70,6,0,Math.PI*2);ctx.fill();
-  // Raised arm
-  ctx.strokeStyle='#D8C8B0';ctx.lineWidth=4;
-  ctx.beginPath();ctx.moveTo(x+8,y-42);ctx.quadraticCurveTo(x+22,y-52,x+18,y-68);ctx.stroke();
+  ctx.beginPath();ctx.arc(x,y-PH-72,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#C0A888';ctx.beginPath();ctx.arc(x,y-PH-79,5,0,Math.PI*2);ctx.fill(); // hair
+  // Arm raised
+  ctx.strokeStyle='#D8C8B0';ctx.lineWidth=3.5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x+7,y-PH-54);ctx.quadraticCurveTo(x+18,y-PH-62,x+14,y-PH-74);ctx.stroke();
+  // Shading
+  ctx.fillStyle='rgba(0,0,0,0.12)';ctx.beginPath();ctx.ellipse(x+5,y-PH-40,5,22,0.2,0,Math.PI*2);ctx.fill();
   // Highlight
-  ctx.fillStyle='rgba(255,255,255,.2)';ctx.beginPath();ctx.ellipse(x-4,y-64,3,5,-.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.18)';ctx.beginPath();ctx.ellipse(x-4,y-PH-70,2.5,4,-0.4,0,Math.PI*2);ctx.fill();
 }
 
+// ════════════════════════════════════════════════════════
+//  DECOR DISPATCHER
+// ════════════════════════════════════════════════════════
+let plantIdx=0;
 function drawDecor(){
-  // Chandeliers
-  [400,900,1400].forEach(x=>drawChandelier(x,100));
+  plantIdx=0;
+  [400,900,1400].forEach(x=>drawChandelier(x,80));
 
-  // Plants (corners + sides)
-  [[90,120],[1710,120],[90,880],[1710,880],
-   [420,440],[660,440],[900,440],[1140,440],[1380,440],
-   [420,530],[660,530],[900,530],[1140,530],[1380,530]].forEach(([x,y])=>drawPlant(x,y));
+  // Corner & side plants
+  [[90,130],[1710,130],[90,870],[1710,870],
+   [420,450],[660,450],[900,450],[1140,450],[1380,450],
+   [420,520],[660,520],[900,520],[1140,520],[1380,520]
+  ].forEach(([x,y])=>{ drawPlant(x,y,plantIdx); plantIdx++; });
 
-  // Benches (center carpet zone)
-  [[510,505],[750,505],[990,505],[1230,505]].forEach(([x,y])=>drawBench(x,y));
-
-  // Pillars (flanking carpet)
-  [[408,490],[648,490],[888,490],[1128,490],[1368,490],
-   [408,490],[648,490],[888,490],[1128,490],[1368,490]].forEach(([x,y])=>drawPillar(x,y));
-
-  // Statues
-  [[155,430],[1645,430],[155,650],[1645,650]].forEach(([x,y])=>drawStatue(x,y));
+  [[510,510],[750,510],[990,510],[1230,510]].forEach(([x,y])=>drawBench(x,y));
+  [[408,490],[648,490],[888,490],[1128,490],[1368,490]].forEach(([x,y])=>drawPillar(x,y));
+  [[155,460],[1645,460],[155,650],[1645,650]].forEach(([x,y])=>drawStatue(x,y));
 }
 
+// ════════════════════════════════════════════════════════
+//  SPOTLIGHTS
+// ════════════════════════════════════════════════════════
 function drawSpotlights(){
-  // Frame spotlights
   FRAMES.forEach(f=>{
-    const cx=f.x+f.w/2, cy=f.y+f.h/2;
-    const sg=ctx.createRadialGradient(cx,cy+100,5,cx,cy+100,120);
-    sg.addColorStop(0,'rgba(255,240,190,0.1)');sg.addColorStop(1,'rgba(255,240,190,0)');
-    ctx.fillStyle=sg;ctx.beginPath();ctx.arc(cx,cy+100,120,0,Math.PI*2);ctx.fill();
+    const cx=f.x+f.w/2, cy=f.y+f.h/2+60;
+    const sg=ctx.createRadialGradient(cx,cy,5,cx,cy,100);
+    sg.addColorStop(0,'rgba(255,240,190,0.09)');sg.addColorStop(1,'rgba(255,240,190,0)');
+    ctx.fillStyle=sg;ctx.beginPath();ctx.arc(cx,cy,100,0,Math.PI*2);ctx.fill();
   });
-  // Chandelier glow
-  [400,900,1400].forEach(x=>{
-    const dg=ctx.createRadialGradient(x,300,30,x,300,260);
-    dg.addColorStop(0,'rgba(255,240,180,0.14)');dg.addColorStop(1,'rgba(255,240,180,0)');
-    ctx.fillStyle=dg;ctx.beginPath();ctx.arc(x,300,260,0,Math.PI*2);ctx.fill();
-  });
-  // Edge vignette
-  const vg=ctx.createRadialGradient(WW/2,WH/2,WW*.25,WW/2,WH/2,WW*.75);
-  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.5)');
+  const vg=ctx.createRadialGradient(WW/2,WH/2,WW*0.22,WW/2,WH/2,WW*0.72);
+  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,0.45)');
   ctx.fillStyle=vg;ctx.fillRect(0,0,WW,WH);
 }
 
+// ════════════════════════════════════════════════════════
+//  FRAMES  (unchanged logic, same positions)
+// ════════════════════════════════════════════════════════
 function drawFrames(){
   FRAMES.forEach((f,idx)=>{
     const art=S.artworks.find(a=>a.placed&&a.frameIdx===idx);
-    // Drop shadow
-    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(f.x-2+5,f.y-2+5,f.w+4,f.h+4);
-    // Outer ornate gold frame
+    ctx.fillStyle='rgba(0,0,0,0.45)';ctx.fillRect(f.x+4,f.y+4,f.w+12,f.h+12);
     const fg=ctx.createLinearGradient(f.x-6,f.y-6,f.x+f.w+6,f.y+f.h+6);
-    fg.addColorStop(0,'#7A5010');fg.addColorStop(.2,'#F0D080');fg.addColorStop(.5,'#C9A84C');fg.addColorStop(.8,'#F0D080');fg.addColorStop(1,'#7A5010');
+    fg.addColorStop(0,'#7A5010');fg.addColorStop(0.2,'#F0D080');fg.addColorStop(0.5,'#C9A84C');fg.addColorStop(0.8,'#F0D080');fg.addColorStop(1,'#7A5010');
     ctx.fillStyle=fg;ctx.fillRect(f.x-6,f.y-6,f.w+12,f.h+12);
-    // Inner dark mat
     ctx.fillStyle='#1A0C04';ctx.fillRect(f.x-2,f.y-2,f.w+4,f.h+4);
-    // Corner ornaments
     const cs=7;
     [[f.x-6,f.y-6],[f.x+f.w+6-cs,f.y-6],[f.x-6,f.y+f.h+6-cs],[f.x+f.w+6-cs,f.y+f.h+6-cs]].forEach(([cx,cy])=>{
       ctx.fillStyle='#F0D080';ctx.fillRect(cx,cy,cs,cs);
-      ctx.strokeStyle='#7A5010';ctx.lineWidth=.5;ctx.strokeRect(cx,cy,cs,cs);
+      ctx.strokeStyle='#7A5010';ctx.lineWidth=0.5;ctx.strokeRect(cx,cy,cs,cs);
     });
-    // Content
     if(art){
       const img=getImg(art);
       if(img&&img.complete&&img.naturalWidth>0) ctx.drawImage(img,f.x,f.y,f.w,f.h);
       else{ ctx.fillStyle='#2A1808';ctx.fillRect(f.x,f.y,f.w,f.h); }
-      // Title plate
-      const plate_h=16;
-      ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(f.x,f.y+f.h,f.w,plate_h);
+      const ph=16;
+      ctx.fillStyle='rgba(0,0,0,0.85)';ctx.fillRect(f.x,f.y+f.h,f.w,ph);
       ctx.fillStyle='#F0D080';ctx.font='bold 9px Quicksand,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText((art.title||'Sans titre').substring(0,18),f.x+f.w/2,f.y+f.h+plate_h/2);
+      ctx.fillText((art.title||'Sans titre').substring(0,18),f.x+f.w/2,f.y+f.h+ph/2);
     } else {
       ctx.fillStyle='#160A03';ctx.fillRect(f.x,f.y,f.w,f.h);
-      ctx.fillStyle='rgba(201,168,76,.12)';ctx.font='22px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle='rgba(201,168,76,0.12)';ctx.font='22px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
       ctx.fillText('🎨',f.x+f.w/2,f.y+f.h/2);
     }
   });
 }
 
-function drawNPC(npc){
-  ctx.save();
-  ctx.translate(npc.x,npc.y);
-  ctx.rotate(npc.wanderAngle+Math.PI/2);
+// ════════════════════════════════════════════════════════
+//  CHARACTER SPRITE  — 4-directional, no rotation
+// ════════════════════════════════════════════════════════
+function drawCharSprite(x,y,dir,isPlayer,cfg){
+  // dir: 0=down(face) 1=left 2=right 3=up(back)
+  // cfg: {bodyCol, bodyCol2, hairCol, skinCol, nameCol, name, emoji, step, blink}
+  const s=cfg.step||0;
+  const bob=cfg.moving?Math.sin(s*0.25)*2.5:0;  // vertical bob
+  const legSwing=cfg.moving?Math.sin(s*0.25)*5:0; // leg swing
+
+  ctx.save();ctx.translate(x,y);
 
   // Shadow
-  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,22,17,7,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.22)';ctx.beginPath();ctx.ellipse(0,14,13,5,0,0,Math.PI*2);ctx.fill();
 
-  // Coat
-  const bg=ctx.createRadialGradient(0,0,4,0,0,18);
-  bg.addColorStop(0,npc.color+'CC');bg.addColorStop(1,npc.color+'44');
-  ctx.fillStyle=bg;ctx.beginPath();ctx.ellipse(0,4,17,19,0,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle=npc.color;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(0,4,17,19,0,0,Math.PI*2);ctx.stroke();
+  if(dir===3){
+    // ─── BACK (going up) ───
+    // Legs
+    ctx.fillStyle=cfg.bodyCol;
+    ctx.fillRect(-7+legSwing,4,7,14);   // left leg
+    ctx.fillRect(0-legSwing,4,7,14);    // right leg
+    // Body
+    ctx.fillStyle=cfg.bodyCol;ctx.fillRect(-10,-12+bob,20,18);
+    ctx.fillStyle=cfg.bodyCol2;ctx.fillRect(-9,-11+bob,18,16);
+    // Back of head
+    ctx.fillStyle=cfg.skinCol;ctx.beginPath();ctx.arc(0,-22+bob,11,0,Math.PI*2);ctx.fill();
+    // Hair (back = full coverage)
+    ctx.fillStyle=cfg.hairCol;ctx.beginPath();ctx.arc(0,-24+bob,10,Math.PI,0);ctx.fill();
+    ctx.beginPath();ctx.arc(-8,-22+bob,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(8,-22+bob,5,0,Math.PI*2);ctx.fill();
+    // Arm hint
+    ctx.fillStyle=cfg.bodyCol;ctx.fillRect(-16,-10+bob,6,12);ctx.fillRect(10,-10+bob,6,12);
 
-  // Head
-  const hg=ctx.createRadialGradient(-2,-22,2,0,-22,11);
-  hg.addColorStop(0,'#FFCFA0');hg.addColorStop(1,'#C89060');
-  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(0,-22,11,0,Math.PI*2);ctx.fill();
+  } else if(dir===0){
+    // ─── FRONT (going down) ───
+    // Legs
+    ctx.fillStyle=cfg.bodyCol;
+    ctx.fillRect(-9+legSwing,4,8,14);
+    ctx.fillRect(1-legSwing,4,8,14);
+    // Dress/body
+    if(isPlayer){
+      // Dress silhouette for player
+      const dg=ctx.createLinearGradient(0,-12+bob,0,18+bob);
+      dg.addColorStop(0,cfg.bodyCol);dg.addColorStop(1,cfg.bodyCol2);
+      ctx.fillStyle=dg;
+      ctx.beginPath();ctx.moveTo(-10,-12+bob);ctx.lineTo(10,-12+bob);ctx.lineTo(14,18+bob);ctx.lineTo(-14,18+bob);ctx.closePath();ctx.fill();
+    } else {
+      ctx.fillStyle=cfg.bodyCol;ctx.fillRect(-10,-12+bob,20,18);
+      ctx.fillStyle=cfg.bodyCol2;ctx.fillRect(-9,-11+bob,18,16);
+    }
+    // Arms
+    ctx.fillStyle=cfg.skinCol;ctx.fillRect(-16,-8+bob,6,10);ctx.fillRect(10,-8+bob,6,10);
+    // Head
+    ctx.fillStyle=cfg.skinCol;ctx.beginPath();ctx.arc(0,-22+bob,11,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=cfg.hairCol;ctx.lineWidth=0.8;ctx.stroke();
+    // Cheeks
+    ctx.fillStyle='rgba(255,120,100,0.22)';ctx.beginPath();ctx.arc(-6,-21+bob,4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(6,-21+bob,4,0,Math.PI*2);ctx.fill();
+    // Eyes
+    if(!cfg.blink){
+      ctx.fillStyle='#2A1808';ctx.beginPath();ctx.arc(-4,-23+bob,2.2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(4,-23+bob,2.2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='white';ctx.beginPath();ctx.arc(-3,-24+bob,0.9,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(5,-24+bob,0.9,0,Math.PI*2);ctx.fill();
+    } else {
+      ctx.strokeStyle='#2A1808';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-6,-23+bob);ctx.lineTo(-2,-23+bob);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(2,-23+bob);ctx.lineTo(6,-23+bob);ctx.stroke();
+    }
+    // Mouth
+    ctx.strokeStyle='#8B5A2B';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(0,-19+bob,3.5,0.3,Math.PI-0.3);ctx.stroke();
+    // Hair
+    ctx.fillStyle=cfg.hairCol;
+    ctx.beginPath();ctx.arc(0,-31+bob,8,Math.PI,0);ctx.fill();
+    ctx.beginPath();ctx.arc(-8,-26+bob,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(8,-26+bob,5,0,Math.PI*2);ctx.fill();
+    // Player extras: palette
+    if(isPlayer){
+      ctx.save();ctx.translate(14,bob);
+      ctx.fillStyle='#C9A84C';ctx.beginPath();ctx.ellipse(0,0,9,6,0.3,0,Math.PI*2);ctx.fill();
+      [[-5,-2,'#FF6B6B'],[1,-4,'#4ECDC4'],[5,1,'#FFE66D']].forEach(([bx,by,bc])=>{
+        ctx.fillStyle=bc;ctx.beginPath();ctx.arc(bx,by,1.8,0,Math.PI*2);ctx.fill();
+      });
+      ctx.restore();
+    }
 
-  // Hair
-  ctx.fillStyle=npc.hairColor;ctx.beginPath();ctx.arc(0,-32,7,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(-5,-28,5,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(5,-28,5,0,Math.PI*2);ctx.fill();
-
-  // Eyes
-  ctx.fillStyle='#333';ctx.beginPath();ctx.arc(-3.5,-23.5,2,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(3.5,-23.5,2,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='white';ctx.beginPath();ctx.arc(-2.5,-24.5,.8,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(4.5,-24.5,.8,0,Math.PI*2);ctx.fill();
-
-  // Smile
-  ctx.strokeStyle='#A06040';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(0,-20,3.5,.2,Math.PI-.2);ctx.stroke();
-
-  ctx.restore();
-
-  // Name + emoji tag
-  ctx.save();ctx.translate(npc.x,npc.y);
-  ctx.font='11px Quicksand,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  const nm=npc.emoji+' '+npc.name;
-  const tw=ctx.measureText(nm).width;
-  ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(-tw/2-5,-52,tw+10,16);
-  ctx.fillStyle=npc.color;ctx.fillText(nm,0,-44);
-  ctx.restore();
-}
-
-function drawVisitor(v){
-  ctx.save();ctx.translate(v.x,v.y);ctx.rotate(v.angle+Math.PI/2);
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(0,20,16,6,0,0,Math.PI*2);ctx.fill();
-  // Body
-  const bg=ctx.createRadialGradient(0,0,4,0,0,17);
-  bg.addColorStop(0,'#88CCEE');bg.addColorStop(1,'#2A6A9A');
-  ctx.fillStyle=bg;ctx.beginPath();ctx.ellipse(0,3,16,18,0,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#1A5A8A';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(0,3,16,18,0,0,Math.PI*2);ctx.stroke();
-  // Head
-  ctx.fillStyle='#FFCFA0';ctx.beginPath();ctx.arc(0,-21,10,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#C09060';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle='#555';ctx.beginPath();ctx.arc(-3,-22,1.8,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(3,-22,1.8,0,Math.PI*2);ctx.fill();
-  ctx.restore();
-  // Name
-  ctx.save();ctx.translate(v.x,v.y);
-  ctx.font='11px Quicksand,sans-serif';ctx.textAlign='center';
-  const nm=(v.emoji||'🌸')+' '+(v.name||'Visiteur');
-  const tw=ctx.measureText(nm).width;
-  ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(-tw/2-5,-48,tw+10,16);
-  ctx.fillStyle='#88CCEE';ctx.fillText(nm,0,-40);
-  ctx.restore();
-}
-
-function drawPlayer(){
-  const {x,y,angle,step}=PL;
-  ctx.save();ctx.translate(x,y);ctx.rotate(angle+Math.PI/2);
-
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(0,22,19,8,0,0,Math.PI*2);ctx.fill();
-
-  // Dress / body
-  const dg=ctx.createRadialGradient(0,2,4,0,2,20);
-  dg.addColorStop(0,'#FFE082');dg.addColorStop(.6,'#FFB74D');dg.addColorStop(1,'#E65100');
-  ctx.fillStyle=dg;ctx.beginPath();ctx.ellipse(0,5,19,21,0,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#BF360C';ctx.lineWidth=1.8;ctx.beginPath();ctx.ellipse(0,5,19,21,0,0,Math.PI*2);ctx.stroke();
-
-  // Apron (little artistic touch)
-  ctx.fillStyle='rgba(255,255,255,.25)';ctx.beginPath();ctx.ellipse(0,6,9,13,0,0,Math.PI*2);ctx.fill();
-
-  // Head
-  const hg=ctx.createRadialGradient(-3,-22,2,0,-22,12);
-  hg.addColorStop(0,'#FFDDB0');hg.addColorStop(1,'#D49460');
-  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(0,-22,12,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#B07040';ctx.lineWidth=1.2;ctx.stroke();
-
-  // Eyes (with blink)
-  if(PL.blink<0.1){
-    ctx.fillStyle='#4A2A10';ctx.beginPath();ctx.arc(-4,-23.5,2.5,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(4,-23.5,2.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='white';ctx.beginPath();ctx.arc(-3,-24.5,1,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(5,-24.5,1,0,Math.PI*2);ctx.fill();
-    // Lashes
-    ctx.strokeStyle='#2A1A08';ctx.lineWidth=1;
-    [-5,-3,-1].forEach(lx=>{ ctx.beginPath();ctx.moveTo(lx,-26.5);ctx.lineTo(lx-.5,-28.5);ctx.stroke(); });
-    [3,5,7].forEach(lx=>{ ctx.beginPath();ctx.moveTo(lx,-26.5);ctx.lineTo(lx+.5,-28.5);ctx.stroke(); });
   } else {
-    ctx.strokeStyle='#4A2A10';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(-7,-23.5);ctx.lineTo(-1,-23.5);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(1,-23.5);ctx.lineTo(7,-23.5);ctx.stroke();
+    // ─── SIDE (left=1 / right=2) ───
+    const flip=(dir===1)?-1:1;
+    ctx.scale(flip,1);
+    // Legs
+    ctx.fillStyle=cfg.bodyCol;ctx.fillRect(-3+legSwing,4,7,14);ctx.fillRect(-3-legSwing*0.5,4,5,12);
+    // Body
+    const bg=ctx.createLinearGradient(-10,-12+bob,10,-12+bob);
+    bg.addColorStop(0,cfg.bodyCol2);bg.addColorStop(1,cfg.bodyCol);
+    ctx.fillStyle=bg;ctx.fillRect(-8,-12+bob,16,18);
+    // Arm front
+    ctx.fillStyle=cfg.skinCol;ctx.fillRect(7,-8+bob,5,10);
+    // Arm back
+    ctx.fillStyle=cfg.bodyCol2;ctx.fillRect(-12,-8+bob,5,10);
+    // Head
+    ctx.fillStyle=cfg.skinCol;ctx.beginPath();ctx.arc(0,-22+bob,10,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=cfg.hairCol;ctx.lineWidth=0.8;ctx.stroke();
+    // Eye (one, facing right)
+    ctx.fillStyle='#2A1808';ctx.beginPath();ctx.arc(4,-23+bob,2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='white';ctx.beginPath();ctx.arc(5,-24+bob,0.8,0,Math.PI*2);ctx.fill();
+    // Nose hint
+    ctx.strokeStyle='#C09060';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(8,-21+bob);ctx.lineTo(10,-19+bob);ctx.stroke();
+    // Hair
+    ctx.fillStyle=cfg.hairCol;ctx.beginPath();ctx.arc(0,-30+bob,7,Math.PI,0.1);ctx.fill();
+    ctx.beginPath();ctx.arc(-7,-24+bob,5,0,Math.PI*2);ctx.fill();
+    // Player: palette side view
+    if(isPlayer){
+      ctx.save();ctx.translate(10,bob);
+      ctx.fillStyle='#C9A84C';ctx.beginPath();ctx.ellipse(0,0,7,5,0,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
   }
 
-  // Smile
-  ctx.strokeStyle='#8B5A2B';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,-19,4.5,.25,Math.PI-.25);ctx.stroke();
-  // Rosy cheeks
-  ctx.fillStyle='rgba(255,120,100,.25)';ctx.beginPath();ctx.arc(-7,-21,4,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(7,-21,4,0,Math.PI*2);ctx.fill();
-
-  // Hair (elegant bun with highlights)
-  ctx.fillStyle='#7A3A10';ctx.beginPath();ctx.arc(0,-34,9,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(-7,-30,6,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(7,-30,6,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#9A5020';ctx.beginPath();ctx.arc(-2,-37,5,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(200,140,80,.3)';ctx.beginPath();ctx.arc(2,-33,3,0,Math.PI*2);ctx.fill();
-  // Hair pin
-  ctx.strokeStyle='#C9A84C';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-3,-39);ctx.lineTo(3,-35);ctx.stroke();
-
-  // Palette in right hand (walking bob)
-  const palY=Math.sin(step*0.3)*3;
-  ctx.save();ctx.translate(20,palY);
-  ctx.fillStyle='#C9A84C';ctx.beginPath();ctx.ellipse(0,0,11,8,.3,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#A07830';ctx.beginPath();ctx.arc(0,0,11,.3,.9);ctx.arc(0,0,5,.9,.3,true);ctx.closePath();ctx.fill();
-  // Paint blobs
-  [[-6,-3,'#FF6B6B'],[1,-5,'#4ECDC4'],[6,1,'#FFE66D'],[-2,4,'#7B68EE']].forEach(([bx,by,bc])=>{
-    ctx.fillStyle=bc;ctx.beginPath();ctx.arc(bx,by,2.2,0,Math.PI*2);ctx.fill();
-  });
-  // Brush
-  ctx.strokeStyle='#8B5A2B';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(8,6);ctx.lineTo(16,-4);ctx.stroke();
-  ctx.fillStyle='#C9A84C';ctx.fillRect(14.5,-5.5,3,2);
   ctx.restore();
 
-  ctx.restore();
-
-  // Name tag
+  // ── Name tag (never rotated, always screen-space) ──
   ctx.save();ctx.translate(x,y);
-  ctx.font='bold 12px Quicksand,sans-serif';ctx.textAlign='center';
-  const nm=ME.emoji+' '+ME.name;const tw=ctx.measureText(nm).width;
-  ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillRect(-tw/2-6,-56,tw+12,18);
-  ctx.fillStyle='#FFD93D';ctx.fillText(nm,0,-43);
+  ctx.font='11px Quicksand,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  const nm=(cfg.emoji||'🎨')+' '+(cfg.name||'?');
+  const tw=ctx.measureText(nm).width;
+  ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(-tw/2-5,-48,tw+10,16);
+  ctx.fillStyle=cfg.nameCol||'#FFD93D';ctx.fillText(nm,0,-40);
   ctx.restore();
 }
 
+// ════════════════════════════════════════════════════════
+//  DRAW PLAYER  — wraps drawCharSprite
+// ════════════════════════════════════════════════════════
+function drawPlayer(){
+  // Compute direction from movement angle
+  let dir=0; // default face down
+  if(PL.moving) dir=getDir(PL.angle);
+  else dir=PL.lastDir||0;
+  if(PL.moving) PL.lastDir=dir;
+
+  drawCharSprite(PL.x,PL.y,dir,true,{
+    bodyCol:'#FFB74D', bodyCol2:'#E65100',
+    hairCol:'#7A3A10', skinCol:'#FFDDB0',
+    nameCol:'#FFD93D', name:ME.name, emoji:ME.emoji,
+    step:PL.step, blink:PL.blink<0.1, moving:PL.moving
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  DRAW NPC
+// ════════════════════════════════════════════════════════
+function drawNPC(npc){
+  // Direction from wander angle
+  const dir=getDir(npc.wanderAngle-Math.PI/2);
+  drawCharSprite(npc.x,npc.y,dir,false,{
+    bodyCol:npc.color, bodyCol2:npc.hairColor,
+    hairCol:npc.hairColor, skinCol:'#FFCFA0',
+    nameCol:npc.color, name:npc.name, emoji:npc.emoji,
+    step:npc.stepCount||0, moving:true
+  });
+  npc.stepCount=(npc.stepCount||0)+1;
+}
+
+// ════════════════════════════════════════════════════════
+//  DRAW VISITOR
+// ════════════════════════════════════════════════════════
+function drawVisitor(v){
+  const dir=v.moving?getDir(v.angle):v.lastDir||0;
+  if(v.moving) v.lastDir=dir;
+  drawCharSprite(v.x,v.y,dir,false,{
+    bodyCol:'#4A90C0', bodyCol2:'#1A5A90',
+    hairCol:'#3A2A1A', skinCol:'#FFCFA0',
+    nameCol:'#88CCEE', name:v.name, emoji:v.emoji,
+    step:v.stepCount||0, moving:v.moving
+  });
+  v.stepCount=(v.stepCount||0)+1;
+}
+
+// ════════════════════════════════════════════════════════
+//  PARTICLES
+// ════════════════════════════════════════════════════════
 function drawParticles(){
   particles=particles.filter(p=>{
-    p.life-=0.02; p.x+=p.vx; p.y+=p.vy; p.vy-=0.05;
+    p.life-=0.018; p.x+=p.vx; p.y+=p.vy; p.vy-=0.04;
     if(p.life<=0) return false;
     ctx.globalAlpha=p.life;
     ctx.fillStyle=p.color;ctx.font=p.size+'px sans-serif';ctx.textAlign='center';
@@ -1048,10 +1152,7 @@ function loop(ts){
 
   if(PL.moving){
     const spd=SPD*dt;
-    PL.tAngle=Math.atan2(my,mx);
-    let da=PL.tAngle-PL.angle;
-    while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;
-    PL.angle+=da*.18;
+    PL.angle=Math.atan2(my,mx);
 
     // Movement with collision
     const nx=PL.x+mx/len*spd*1.05;
@@ -1086,9 +1187,9 @@ function loop(ts){
       npc.wanderAngle+=( Math.random()-.5)*1.5;
       npc.wanderT=0;
     }
-    const ws=28*dt;
-    let nx=npc.x+Math.cos(npc.wanderAngle-Math.PI/2)*ws;
-    let ny=npc.y+Math.sin(npc.wanderAngle-Math.PI/2)*ws;
+    const ws=26*dt;
+    let nx=npc.x+Math.cos(npc.wanderAngle)*ws;
+    let ny=npc.y+Math.sin(npc.wanderAngle)*ws;
     // Bound NPCs to museum interior
     nx=Math.max(100,Math.min(WW-100,nx));ny=Math.max(100,Math.min(WH-100,ny));
     // Simple wall check
