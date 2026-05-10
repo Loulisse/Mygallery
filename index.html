@@ -1459,91 +1459,291 @@ function spawnParticles(x,y,chars,n){
 // ════════════════════════════════════════════════════════
 //  MULTIPLAYER
 // ════════════════════════════════════════════════════════
-let roomId=null,bc=null,lastBcast=0;
+// ════════════════════════════════════════════════════════
+//  FIREBASE REALTIME DATABASE — vrai multijoueur cross-appareils
+//  Base de données gratuite Firebase de maman (projet dédié)
+// ════════════════════════════════════════════════════════
+// ── Configuration Firebase ──
+// Maman configure son URL Firebase une seule fois (gratuit)
+let FB_URL = localStorage.getItem('musee_fb_url') || '';
 
-function initMulti(){
-  const params=new URLSearchParams(window.location.search);
-  const room=params.get('room');
-  const asVisitor=params.get('visitor')==='1';
+function getFbUrl() { return FB_URL; }
 
-  if(room){
-    roomId=room;
-    if(asVisitor){
-      // Load gallery from storage
-      try{
-        const d=localStorage.getItem('musee_room_'+roomId);
-        if(d){const p=JSON.parse(d);S.artworks=p.artworks||[];S.museumName=p.museumName||'Musée';}
-      }catch(e){}
-    }
-  } else {
-    roomId='r_'+Date.now()+'_'+Math.random().toString(36).substr(2,8);
-    window.history.replaceState({},'','?room='+roomId);
+async function fbReady() {
+  // If no URL configured, show setup screen
+  if (!FB_URL) {
+    return new Promise(resolve => { fbSetupResolve = resolve; showFbSetup(); });
   }
+  return true;
+}
+let fbSetupResolve = null;
 
-  const shareUrl=window.location.origin+window.location.pathname+'?room='+roomId+'&visitor=1';
-  document.getElementById('share-url').textContent=shareUrl;
-  document.getElementById('museum-label').textContent='🏛 '+S.museumName;
-
-  if(typeof BroadcastChannel!=='undefined'){
-    bc=new BroadcastChannel('musee_'+roomId);
-    bc.onmessage=onBcast;
-  }
-  if(ME.role==='artist') broadcastGallery();
+function showFbSetup() {
+  document.getElementById('fb-setup').style.display = 'flex';
 }
 
-function onBcast(e){
-  const m=e.data;if(!m||!m.type)return;
-  if(m.type==='pos'&&m.id!==ME.id){
-    visitors[m.id]={...m,lastSeen:Date.now()};
+function saveFbUrl() {
+  const url = document.getElementById('fb-url-inp').value.trim().replace(/\/+$/, '');
+  if (!url || !url.includes('firebasedatabase') && !url.includes('firebaseio')) {
+    document.getElementById('fb-err').textContent = '⚠️ URL invalide. Elle doit contenir "firebasedatabase" ou "firebaseio"';
+    return;
+  }
+  FB_URL = url;
+  localStorage.setItem('musee_fb_url', FB_URL);
+  document.getElementById('fb-setup').style.display = 'none';
+  if (fbSetupResolve) { fbSetupResolve(true); fbSetupResolve = null; }
+}
+
+function skipFbSetup() {
+  // Mode hors-ligne : pas de partage, mais tout fonctionne en local
+  document.getElementById('fb-setup').style.display = 'none';
+  FB_URL = '';
+  if (fbSetupResolve) { fbSetupResolve(false); fbSetupResolve = null; }
+  notify('Mode hors-ligne : le partage est désactivé');
+}
+
+let roomId = null;
+let lastBcast = 0;
+let fbGalleryInterval = null;
+let fbPresenceInterval = null;
+let fbChatListener = null;
+let lastChatTs = 0;
+
+// ── Utilitaires REST Firebase ──
+async function fbSet(path, data) {
+  if (!FB_URL) return;
+  try {
+    await fetch(FB_URL + path + '.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) { console.warn('fbSet err', e); }
+}
+
+async function fbPatch(path, data) {
+  if (!FB_URL) return;
+  try {
+    await fetch(FB_URL + path + '.json', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) { console.warn('fbPatch err', e); }
+}
+
+async function fbGet(path) {
+  if (!FB_URL) return null;
+  try {
+    const r = await fetch(FB_URL + path + '.json');
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+async function fbDelete(path) {
+  if (!FB_URL) return;
+  try {
+    await fetch(FB_URL + path + '.json', { method: 'DELETE' });
+  } catch(e) {}
+}
+
+// ── Polling léger (SSE non dispo en REST simple) ──
+function startPolling() {
+  // Positions des autres joueurs (toutes les 300ms)
+  fbPresenceInterval = setInterval(async () => {
+    const all = await fbGet('/rooms/' + roomId + '/presence');
+    if (!all) return;
+    Object.entries(all).forEach(([id, v]) => {
+      if (id === ME.id) return;
+      if (Date.now() - v.ts > 8000) return; // ignoré si vieux
+      visitors[id] = { ...v, lastSeen: Date.now() };
+    });
+    // Purger disparus
+    Object.keys(visitors).forEach(id => {
+      if (Date.now() - visitors[id].lastSeen > 8000) delete visitors[id];
+    });
     updateVList();
-  } else if(m.type==='gallery'&&ME.role!=='artist'){
-    S.artworks=m.artworks||[];
-    S.museumName=m.museumName||'Musée';
-    document.getElementById('museum-label').textContent='🏛 '+S.museumName;
-  } else if(m.type==='chat'){
-    showBubble(m.name||'Quelqu\'un',m.text);
+  }, 300);
+
+  // Galerie (toutes les 2s pour les visiteurs)
+  if (ME.role !== 'artist') {
+    fbGalleryInterval = setInterval(async () => {
+      const g = await fbGet('/rooms/' + roomId + '/gallery');
+      if (!g) return;
+      // Recharger les artworks depuis Firebase (sans les dataUrl trop lourds → séparés)
+      const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
+      if (artMeta) {
+        // Fusionner meta + dataUrls déjà en cache local
+        S.artworks = artMeta.map(a => {
+          const local = S.artworks.find(x => x.id === a.id);
+          return { ...a, dataUrl: local ? local.dataUrl : (a.dataUrl || null) };
+        });
+        // Charger les images manquantes
+        S.artworks.forEach(a => { if (!a.dataUrl) loadArtworkData(a.id); });
+      }
+      S.museumName = g.museumName || 'Musée';
+      document.getElementById('museum-label').textContent = '🏛 ' + S.museumName;
+    }, 2000);
+  }
+
+  // Chat (toutes les 1.5s)
+  setInterval(async () => {
+    const msgs = await fbGet('/rooms/' + roomId + '/chat');
+    if (!msgs) return;
+    Object.values(msgs)
+      .filter(m => m.ts > lastChatTs && m.id !== ME.id)
+      .sort((a,b) => a.ts - b.ts)
+      .forEach(m => {
+        lastChatTs = Math.max(lastChatTs, m.ts);
+        showBubble(m.name || 'Quelqu\'un', m.text);
+      });
+    // Init lastChatTs au démarrage
+    if (lastChatTs === 0) {
+      lastChatTs = Date.now();
+    }
+  }, 1500);
+}
+
+// ── Charger image depuis Firebase pour les visiteurs ──
+async function loadArtworkData(artId) {
+  const data = await fbGet('/rooms/' + roomId + '/artwork_data/' + artId);
+  if (data && data.dataUrl) {
+    const art = S.artworks.find(a => a.id === artId);
+    if (art) { art.dataUrl = data.dataUrl; delete IMG_CACHE[artId]; }
   }
 }
 
-function broadcast(){
-  if(!bc)return;
-  const now=Date.now();if(now-lastBcast<80)return;lastBcast=now;
-  bc.postMessage({type:'pos',id:ME.id,x:PL.x,y:PL.y,angle:PL.angle,name:ME.name,emoji:ME.emoji});
+// ── Envoyer ma position (throttlé dans loop) ──
+function broadcast() {
+  const now = Date.now();
+  if (now - lastBcast < 250) return; // 4fps suffisent pour la position
+  lastBcast = now;
+  fbPatch('/rooms/' + roomId + '/presence/' + ME.id, {
+    id: ME.id, x: Math.round(PL.x), y: Math.round(PL.y),
+    angle: +PL.angle.toFixed(2), name: ME.name, emoji: ME.emoji,
+    moving: PL.moving, ts: Date.now()
+  });
 }
 
-function broadcastGallery(){
-  const data={artworks:S.artworks,museumName:S.museumName};
-  if(roomId)localStorage.setItem('musee_room_'+roomId,JSON.stringify(data));
-  if(bc)bc.postMessage({type:'gallery',artworks:S.artworks,museumName:S.museumName});
+// ── Publier la galerie (artiste seulement) ──
+async function broadcastGallery() {
+  if (!roomId) return;
+  // 1. Métadonnées légères (sans les dataUrl)
+  const meta = S.artworks.map(a => ({
+    id: a.id, title: a.title, desc: a.desc||'',
+    placed: a.placed, frameIdx: a.frameIdx, addedAt: a.addedAt||''
+  }));
+  await fbSet('/rooms/' + roomId + '/artworks_meta', meta);
+  // 2. Gallery info
+  await fbSet('/rooms/' + roomId + '/gallery', { museumName: S.museumName, ts: Date.now() });
+  // 3. Images (séparément, en parallèle)
+  for (const a of S.artworks) {
+    if (a.dataUrl) {
+      fbSet('/rooms/' + roomId + '/artwork_data/' + a.id, { dataUrl: a.dataUrl });
+    }
+  }
+  // 4. Local save also
+  save();
 }
 
-function updateVList(){
-  const vkeys=Object.keys(visitors);
-  document.getElementById('vcnt').textContent=vkeys.length;
-  const list=document.getElementById('vlist');
-  if(!vkeys.length){list.innerHTML='<div class="empty-state">Personne encore… Partagez le lien ! ✨</div>';return;}
-  list.innerHTML=vkeys.map(id=>`
+// ── Envoyer un message chat ──
+async function sendMsg(text) {
+  closePanel('messages-panel');
+  const ts = Date.now();
+  const key = 'msg_' + ts + '_' + ME.id.substr(0,4);
+  await fbPatch('/rooms/' + roomId + '/chat', {
+    [key]: { id: ME.id, name: ME.name, text, ts }
+  });
+  showBubble(ME.name, text);
+  // Nettoyer les vieux messages (garder les 20 derniers)
+  setTimeout(async () => {
+    const all = await fbGet('/rooms/' + roomId + '/chat');
+    if (all) {
+      const keys = Object.keys(all).sort();
+      if (keys.length > 20) {
+        for (const k of keys.slice(0, keys.length - 20)) {
+          fbDelete('/rooms/' + roomId + '/chat/' + k);
+        }
+      }
+    }
+  }, 5000);
+}
+
+function sendCustom() {
+  const t = document.getElementById('custom-msg').value.trim(); if (!t) return;
+  document.getElementById('custom-msg').value = ''; sendMsg(t);
+}
+
+function showBubble(name, text) {
+  const area = document.getElementById('chat-area');
+  area.style.display = 'flex';
+  const b = document.createElement('div'); b.className = 'cbub';
+  b.innerHTML = `<strong>${name}</strong>${text}`;
+  area.appendChild(b);
+  setTimeout(() => { b.remove(); if (!area.children.length) area.style.display = 'none'; }, 5200);
+}
+
+// ── Liste des visiteurs ──
+function updateVList() {
+  const vkeys = Object.keys(visitors);
+  document.getElementById('vcnt').textContent = vkeys.length;
+  const list = document.getElementById('vlist');
+  if (!vkeys.length) {
+    list.innerHTML = '<div class="empty-state">Personne encore… Partagez le lien ! ✨</div>';
+    return;
+  }
+  list.innerHTML = vkeys.map(id => `
     <div class="vitem"><div class="vi-av">${visitors[id].emoji||'🌸'}</div>
-    <div><div class="vi-name">${visitors[id].name||'Visiteur'}</div><div class="vi-st">En visite actuellement</div></div></div>
+    <div><div class="vi-name">${visitors[id].name||'Visiteur'}</div>
+    <div class="vi-st">En visite actuellement 🟢</div></div></div>
   `).join('');
 }
 
-function sendMsg(text){
-  closePanel('messages-panel');
-  if(bc)bc.postMessage({type:'chat',id:ME.id,name:ME.name,text});
-  showBubble(ME.name,text);
-}
-function sendCustom(){
-  const t=document.getElementById('custom-msg').value.trim();if(!t)return;
-  document.getElementById('custom-msg').value='';sendMsg(t);
-}
-function showBubble(name,text){
-  const area=document.getElementById('chat-area');
-  area.style.display='flex';
-  const b=document.createElement('div');b.className='cbub';
-  b.innerHTML=`<strong>${name}</strong>${text}`;
-  area.appendChild(b);
-  setTimeout(()=>{b.remove();if(!area.children.length)area.style.display='none';},5200);
+// ── Init multijoueur ──
+async function initMulti() {
+  const ready = await fbReady();
+  const params = new URLSearchParams(window.location.search);
+  const room = params.get('room');
+  const asVisitor = params.get('visitor') === '1';
+
+  if (room) {
+    roomId = room;
+    if (asVisitor) {
+      // Visiteur : charger la galerie depuis Firebase
+      notify('⏳ Chargement de la galerie…');
+      const g = await fbGet('/rooms/' + roomId + '/gallery');
+      const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
+      if (artMeta) {
+        S.artworks = artMeta;
+        S.artworks.forEach(a => loadArtworkData(a.id));
+      }
+      if (g) {
+        S.museumName = g.museumName || 'Musée';
+      }
+      notify('🎨 Bienvenue dans la galerie !');
+    }
+  } else {
+    // Artiste : créer un room ID unique et stable (basé sur localStorage)
+    const saved = localStorage.getItem('musee_room_id');
+    roomId = saved || ('r_' + Date.now() + '_' + Math.random().toString(36).substr(2,8));
+    localStorage.setItem('musee_room_id', roomId);
+    window.history.replaceState({}, '', '?room=' + roomId);
+  }
+
+  const shareUrl = window.location.origin + window.location.pathname + '?room=' + roomId + '&visitor=1';
+  document.getElementById('share-url').textContent = shareUrl;
+  document.getElementById('museum-label').textContent = '🏛 ' + (S.museumName || 'Mon Musée');
+
+  // Présence : nettoyage à la fermeture
+  window.addEventListener('beforeunload', () => {
+    fbDelete('/rooms/' + roomId + '/presence/' + ME.id);
+  });
+
+  if (ME.role === 'artist') await broadcastGallery();
+
+  lastChatTs = Date.now(); // ignorer les anciens messages
+  startPolling();
 }
 
 // ════════════════════════════════════════════════════════
@@ -1635,5 +1835,30 @@ window.addEventListener('load',()=>{
 });
 </script>
 
+<!-- FIREBASE SETUP -->
+
+<div id="fb-setup" style="position:fixed;inset:0;z-index:9800;display:none;align-items:center;justify-content:center;background:rgba(5,2,0,0.98);flex-direction:column;gap:0;padding:20px">
+  <div style="background:#120804;border:1px solid #C9A84C;padding:28px 24px;max-width:380px;width:100%;position:relative">
+    <div style="font-family:'Playfair Display',serif;font-size:22px;color:#F0D080;margin-bottom:6px;text-align:center">🌐 Galerie en ligne</div>
+    <div style="color:#D4B880;font-size:13px;line-height:1.7;margin-bottom:18px;text-align:center">Pour que vos amis puissent visiter votre galerie depuis leur téléphone, créez une base de données gratuite Firebase en 3 minutes :</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+      <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);padding:11px 14px;color:#F0E4CC;font-size:13px;line-height:1.6;border-radius:0">
+        <b style="color:#F0D080">1.</b> Allez sur <b style="color:#C9A84C">console.firebase.google.com</b><br>
+        <b style="color:#F0D080">2.</b> Créez un projet (gratuit, 2 clics)<br>
+        <b style="color:#F0D080">3.</b> Dans le menu : <b style="color:#C9A84C">Realtime Database → Créer</b><br>
+        <b style="color:#F0D080">4.</b> Choisissez <b style="color:#C9A84C">"Mode test"</b> (partage libre)<br>
+        <b style="color:#F0D080">5.</b> Copiez l'URL (ex: https://mon-musee-rtdb.firebaseio.com)<br>
+        <b style="color:#F0D080">6.</b> Collez-la ci-dessous ↓
+      </div>
+    </div>
+    <input id="fb-url-inp" class="inp" type="url" placeholder="https://votre-projet-rtdb.firebaseio.com" style="font-size:13px;margin-bottom:6px">
+    <div id="fb-err" style="color:#E07070;font-size:11px;min-height:16px;margin-bottom:10px"></div>
+    <button class="btn-primary" onclick="saveFbUrl()" style="margin-bottom:8px">✅ Connecter ma galerie</button>
+    <button class="btn-secondary" onclick="skipFbSetup()">⏭ Ignorer (mode hors-ligne)</button>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(201,168,76,0.2);color:#9A7850;font-size:11px;text-align:center;line-height:1.6">
+      💡 Firebase Spark (gratuit) = 1 Go de stockage · 10 Go/mois de transfert<br>Aucune carte bancaire requise
+    </div>
+  </div>
+</div>
 </body>
 </html>
