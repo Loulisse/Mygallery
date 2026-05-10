@@ -122,7 +122,7 @@ body.moving #cursor::before{content:‘👣’}
 #art-popup{position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;background:rgba(4,2,0,.97);color:#F0E4CC}
 .ap-box{background:#100804;border:1px solid var(–gold);padding:24px;max-width:340px;width:92%}
 .ap-box h3{font-family:‘Playfair Display’,serif;color:var(–gold-l);font-size:19px;margin-bottom:14px}
-.ap-prev{width:100%;aspect-ratio:3/2;object-fit:cover;margin-bottom:14px;display:block;background:#1A0C06}
+/* ap-prev replaced by crop canvas */
 .inp{width:100%;background:#0A0503;border:1px solid rgba(201,168,76,.28);color:#F0E4CC;padding:11px 14px;font-family:‘Quicksand’,sans-serif;font-size:14px;margin-bottom:10px;outline:none}
 .inp:focus{border-color:var(–gold)}
 .inp::placeholder{color:rgba(201,168,76,.45)}
@@ -406,13 +406,31 @@ body.moving #cursor::before{content:‘👣’}
 <!-- ARTWORK POPUP (naming) -->
 
 <div id="art-popup">
-  <div class="ap-box">
-    <h3>🎨 Nommer votre tableau</h3>
-    <img class="ap-prev" id="ap-prev" src="" alt="">
-    <input class="inp" id="ap-title" type="text" placeholder="Titre du tableau…" maxlength="40">
-    <input class="inp" id="ap-desc" type="text" placeholder="Une note… (optionnel)" maxlength="60">
-    <button class="btn-primary" onclick="confirmArt()" style="margin-bottom:8px">✨ Ajouter à ma collection</button>
-    <button class="btn-secondary" onclick="closeArtPopup()">Annuler</button>
+  <div class="ap-box" style="max-width:380px">
+    <h3>🎨 Recadrer &amp; nommer</h3>
+
+```
+<!-- Crop zone -->
+<div id="crop-wrap" style="position:relative;width:100%;aspect-ratio:3/2;background:#0A0503;overflow:hidden;touch-action:none;cursor:crosshair;margin-bottom:4px;border:1px solid rgba(201,168,76,.3)">
+  <canvas id="crop-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+  <!-- Crop overlay frame -->
+  <div id="crop-frame" style="position:absolute;border:2px solid #F0D080;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);pointer-events:none"></div>
+</div>
+<!-- Crop controls -->
+<div style="display:flex;gap:6px;margin-bottom:10px">
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(3,2)">3:2</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(1,1)">1:1</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(4,3)">4:3</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(2,3)">2:3</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropReset()">⟳</button>
+</div>
+
+<input class="inp" id="ap-title" type="text" placeholder="Titre du tableau…" maxlength="40">
+<input class="inp" id="ap-desc" type="text" placeholder="Une note… (optionnel)" maxlength="60" style="margin-bottom:12px">
+<button class="btn-primary" onclick="confirmArt()" style="margin-bottom:8px">✨ Ajouter à ma collection</button>
+<button class="btn-secondary" onclick="closeArtPopup()">Annuler</button>
+```
+
   </div>
 </div>
 
@@ -1380,33 +1398,218 @@ function deleteFromDetail(){
 // ─ Add artwork ─
 function trigCam(){document.getElementById('f-cam').click();}
 function trigGal(){document.getElementById('f-gal').click();}
-function handleFile(inp){
-  const file=inp.files[0];if(!file)return;
+
+// ─── CROP ENGINE ───
+let cropState = {
+  img: null,          // Image object
+  // Image transform (pan + zoom)
+  ox: 0, oy: 0,      // offset of image center in canvas coords
+  scale: 1,           // zoom level
+  // Crop rect (in canvas %)
+  cx: 0.05, cy: 0.05, cw: 0.90, ch: 0.90,
+  // Drag state
+  dragging: false, lastX: 0, lastY: 0,
+  pinching: false, lastDist: 0,
+  // Current aspect
+  aspect: 3/2,
+  // Canvas element
+  cv: null, ctx2: null, wrap: null
+};
+
+function initCropCanvas() {
+  cropState.cv = document.getElementById('crop-canvas');
+  cropState.ctx2 = cropState.cv.getContext('2d');
+  cropState.wrap = document.getElementById('crop-wrap');
+  const w = cropState.wrap.clientWidth || 340;
+  const h = w * 2/3;
+  cropState.cv.width = w * 2;   // retina
+  cropState.cv.height = h * 2;
+  cropState.cv.style.width = w + 'px';
+  cropState.cv.style.height = h + 'px';
+
+  // Touch events
+  const el = cropState.wrap;
+  el.addEventListener('touchstart',  cropTouchStart,  {passive:false});
+  el.addEventListener('touchmove',   cropTouchMove,   {passive:false});
+  el.addEventListener('touchend',    cropTouchEnd,    {passive:false});
+  el.addEventListener('mousedown',   cropMouseDown);
+  el.addEventListener('mousemove',   cropMouseMove);
+  el.addEventListener('mouseup',     cropMouseUp);
+  el.addEventListener('wheel',       cropWheel,       {passive:false});
+}
+
+function loadCropImage(dataUrl) {
+  const img = new Image();
+  img.onload = () => {
+    cropState.img = img;
+    // Fit image into canvas
+    const cw = cropState.cv.width, ch = cropState.cv.height;
+    const sx = cw / img.width, sy = ch / img.height;
+    cropState.scale = Math.max(sx, sy) * 0.95;
+    cropState.ox = cw / 2;
+    cropState.oy = ch / 2;
+    cropAspect(3, 2);
+  };
+  img.src = dataUrl;
+}
+
+function cropReset() {
+  if (!cropState.img) return;
+  const cw = cropState.cv.width, ch = cropState.cv.height;
+  const sx = cw / cropState.img.width, sy = ch / cropState.img.height;
+  cropState.scale = Math.max(sx, sy) * 0.95;
+  cropState.ox = cw / 2; cropState.oy = ch / 2;
+  renderCrop();
+}
+
+function cropAspect(aw, ah) {
+  cropState.aspect = aw / ah;
+  // Center crop rect, max size
+  const cw = cropState.cv.width, ch = cropState.cv.height;
+  let fw = cw * 0.88, fh = fw / cropState.aspect;
+  if (fh > ch * 0.88) { fh = ch * 0.88; fw = fh * cropState.aspect; }
+  cropState.cx = (cw - fw) / 2 / cw;
+  cropState.cy = (ch - fh) / 2 / ch;
+  cropState.cw = fw / cw;
+  cropState.ch = fh / ch;
+  updateCropFrame();
+  renderCrop();
+}
+
+function updateCropFrame() {
+  const frame = document.getElementById('crop-frame');
+  const wrap = cropState.wrap;
+  const dw = wrap.clientWidth, dh = wrap.clientHeight;
+  // Convert from canvas coords to display coords
+  const s = dw / cropState.cv.width; // display/canvas ratio
+  const fx = cropState.cx * cropState.cv.width * s;
+  const fy = cropState.cy * cropState.cv.height * s;
+  const fw = cropState.cw * cropState.cv.width * s;
+  const fh = cropState.ch * cropState.cv.height * s;
+  frame.style.left   = fx + 'px';
+  frame.style.top    = fy + 'px';
+  frame.style.width  = fw + 'px';
+  frame.style.height = fh + 'px';
+}
+
+function renderCrop() {
+  if (!cropState.img || !cropState.ctx2) return;
+  const { ctx2: c, cv, img, ox, oy, scale } = cropState;
+  c.clearRect(0, 0, cv.width, cv.height);
+  c.save();
+  c.translate(ox, oy);
+  c.scale(scale, scale);
+  c.drawImage(img, -img.width/2, -img.height/2);
+  c.restore();
+}
+
+// Produce cropped dataUrl for saving
+function getCroppedDataUrl() {
+  const { cv, ctx2: c, img, ox, oy, scale, cx, cy, cw, ch } = cropState;
+  const fw = cw * cv.width, fh = ch * cv.height;
+  const fx = cx * cv.width,  fy = cy * cv.height;
+  const out = document.createElement('canvas');
+  out.width = Math.round(fw); out.height = Math.round(fh);
+  const oc = out.getContext('2d');
+  oc.save();
+  oc.translate(-fx, -fy);
+  oc.translate(ox, oy);
+  oc.scale(scale, scale);
+  oc.drawImage(img, -img.width/2, -img.height/2);
+  oc.restore();
+  return out.toDataURL('image/jpeg', 0.88);
+}
+
+// ── Touch/Mouse handlers for pan ──
+function cropPointerStart(x, y) { cropState.dragging = true; cropState.lastX = x; cropState.lastY = y; }
+function cropPointerMove(x, y) {
+  if (!cropState.dragging) return;
+  cropState.ox += (x - cropState.lastX) * 2; // *2 for retina
+  cropState.oy += (y - cropState.lastY) * 2;
+  cropState.lastX = x; cropState.lastY = y;
+  renderCrop();
+}
+function cropPointerEnd() { cropState.dragging = false; }
+
+function cropMouseDown(e) { cropPointerStart(e.offsetX, e.offsetY); }
+function cropMouseMove(e) { if (e.buttons) cropPointerMove(e.offsetX, e.offsetY); }
+function cropMouseUp()    { cropPointerEnd(); }
+
+function cropTouchStart(e) {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    const r = cropState.wrap.getBoundingClientRect();
+    cropPointerStart(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
+  } else if (e.touches.length === 2) {
+    cropState.dragging = false; cropState.pinching = true;
+    cropState.lastDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+}
+function cropTouchMove(e) {
+  e.preventDefault();
+  const r = cropState.wrap.getBoundingClientRect();
+  if (cropState.pinching && e.touches.length === 2) {
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    cropState.scale *= dist / cropState.lastDist;
+    cropState.scale = Math.max(0.3, Math.min(8, cropState.scale));
+    cropState.lastDist = dist;
+    renderCrop();
+  } else if (cropState.dragging && e.touches.length === 1) {
+    cropPointerMove(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
+  }
+}
+function cropTouchEnd(e) { cropState.pinching = false; cropPointerEnd(); }
+function cropWheel(e) {
+  e.preventDefault();
+  cropState.scale *= e.deltaY < 0 ? 1.08 : 0.93;
+  cropState.scale = Math.max(0.3, Math.min(8, cropState.scale));
+  renderCrop();
+}
+
+// ── Lifecycle ──
+function handleFile(inp) {
+  const file = inp.files[0]; if (!file) return;
   closePanel('place-panel');
-  const rd=new FileReader();
-  rd.onload=e=>{
-    pendingImg=e.target.result;
-    document.getElementById('ap-prev').src=pendingImg;
-    document.getElementById('ap-title').value='';
-    document.getElementById('ap-desc').value='';
-    document.getElementById('art-popup').style.display='flex';
+  const rd = new FileReader();
+  rd.onload = e => {
+    pendingImg = e.target.result;
+    document.getElementById('ap-title').value = '';
+    document.getElementById('ap-desc').value = '';
+    document.getElementById('art-popup').style.display = 'flex';
+    // Init crop on next frame (DOM needs to render first)
+    requestAnimationFrame(() => {
+      initCropCanvas();
+      loadCropImage(pendingImg);
+    });
   };
   rd.readAsDataURL(file);
-  inp.value='';
+  inp.value = '';
 }
-function confirmArt(){
-  if(!pendingImg)return;
-  const title=document.getElementById('ap-title').value.trim()||'Sans titre';
-  const desc=document.getElementById('ap-desc').value.trim();
-  const id='art_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
-  S.artworks.push({id,title,desc,dataUrl:pendingImg,placed:false,frameIdx:null,addedAt:new Date().toLocaleDateString('fr-FR')});
-  save();pendingImg=null;
-  document.getElementById('art-popup').style.display='none';
-  notify('🎨 "'+title+'" ajouté à votre collection !');
-  spawnParticles(PL.x,PL.y,['🎨','✨','🌟'],8);
-  broadcastGallery();renderColl();openPanel('collection-panel');
+
+function confirmArt() {
+  if (!pendingImg) return;
+  const title = document.getElementById('ap-title').value.trim() || 'Sans titre';
+  const desc  = document.getElementById('ap-desc').value.trim();
+  const id = 'art_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  // Use cropped version
+  const finalDataUrl = cropState.img ? getCroppedDataUrl() : pendingImg;
+  S.artworks.push({id, title, desc, dataUrl: finalDataUrl, placed:false, frameIdx:null, addedAt: new Date().toLocaleDateString('fr-FR')});
+  save(); pendingImg = null;
+  document.getElementById('art-popup').style.display = 'none';
+  notify('🎨 "' + title + '" ajouté à votre collection !');
+  spawnParticles(PL.x, PL.y, ['🎨','✨','🌟'], 8);
+  broadcastGallery(); renderColl(); openPanel('collection-panel');
 }
-function closeArtPopup(){document.getElementById('art-popup').style.display='none';pendingImg=null;}
+function closeArtPopup() {
+  document.getElementById('art-popup').style.display = 'none';
+  pendingImg = null; cropState.img = null;
+}
 
 // ─ Collection panel ─
 function renderColl(){
@@ -1702,15 +1905,25 @@ function updateVList() {
 
 // ── Init multijoueur ──
 async function initMulti() {
-  const ready = await fbReady();
   const params = new URLSearchParams(window.location.search);
   const room = params.get('room');
   const asVisitor = params.get('visitor') === '1';
+  const fbParam = params.get('fb'); // URL Firebase encodée dans le lien visiteur
+
+  if (asVisitor && fbParam) {
+    // ── VISITEUR avec lien complet : on extrait l'URL Firebase du lien
+    // Pas besoin de configurer Firebase, tout est dans le lien !
+    FB_URL = decodeURIComponent(fbParam);
+    localStorage.setItem('musee_fb_url', FB_URL); // mémoriser pour prochaine visite
+  } else {
+    // ── ARTISTE (ou visiteur sans paramètre fb) : vérifier la config Firebase
+    const ready = await fbReady();
+    if (!ready) return; // mode hors-ligne, on continue sans multi
+  }
 
   if (room) {
     roomId = room;
     if (asVisitor) {
-      // Visiteur : charger la galerie depuis Firebase
       notify('⏳ Chargement de la galerie…');
       const g = await fbGet('/rooms/' + roomId + '/gallery');
       const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
@@ -1718,31 +1931,31 @@ async function initMulti() {
         S.artworks = artMeta;
         S.artworks.forEach(a => loadArtworkData(a.id));
       }
-      if (g) {
-        S.museumName = g.museumName || 'Musée';
-      }
-      notify('🎨 Bienvenue dans la galerie !');
+      if (g) { S.museumName = g.museumName || 'Musée'; }
+      setTimeout(() => notify('🎨 Bienvenue dans la galerie !'), 1200);
     }
   } else {
-    // Artiste : créer un room ID unique et stable (basé sur localStorage)
+    // Artiste : room ID stable
     const saved = localStorage.getItem('musee_room_id');
     roomId = saved || ('r_' + Date.now() + '_' + Math.random().toString(36).substr(2,8));
     localStorage.setItem('musee_room_id', roomId);
     window.history.replaceState({}, '', '?room=' + roomId);
   }
 
-  const shareUrl = window.location.origin + window.location.pathname + '?room=' + roomId + '&visitor=1';
+  // Lien de partage : on encode l'URL Firebase dedans pour les visiteurs
+  const fbEncoded = FB_URL ? encodeURIComponent(FB_URL) : '';
+  const shareUrl = window.location.origin + window.location.pathname
+    + '?room=' + roomId + '&visitor=1'
+    + (fbEncoded ? '&fb=' + fbEncoded : '');
   document.getElementById('share-url').textContent = shareUrl;
   document.getElementById('museum-label').textContent = '🏛 ' + (S.museumName || 'Mon Musée');
 
-  // Présence : nettoyage à la fermeture
   window.addEventListener('beforeunload', () => {
     fbDelete('/rooms/' + roomId + '/presence/' + ME.id);
   });
 
   if (ME.role === 'artist') await broadcastGallery();
-
-  lastChatTs = Date.now(); // ignorer les anciens messages
+  lastChatTs = Date.now();
   startPolling();
 }
 
