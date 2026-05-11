@@ -1732,119 +1732,112 @@ function spawnParticles(x,y,chars,n){
 // ════════════════════════════════════════════════════════
 //  MULTIPLAYER
 // ════════════════════════════════════════════════════════
+//  MULTIJOUEUR — Firebase Realtime Database
 // ════════════════════════════════════════════════════════
-//  FIREBASE REALTIME DATABASE — vrai multijoueur cross-appareils
-//  Base de données gratuite Firebase de maman (projet dédié)
-// ════════════════════════════════════════════════════════
-// ── Firebase URL hardcodée — aucune configuration requise ──
 const FB_URL = 'https://maman-e8380-default-rtdb.firebaseio.com';
-
-async function fbReady() { return true; }
 
 let roomId = null;
 let lastBcast = 0;
-let fbGalleryInterval = null;
-let fbPresenceInterval = null;
-let fbChatListener = null;
 let lastChatTs = 0;
+let pollingStarted = false;
 
-// ── Utilitaires REST Firebase ──
+// ── REST Firebase ──
 async function fbSet(path, data) {
-  if (!FB_URL) return;
   try {
-    await fetch(FB_URL + path + '.json', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+    const r = await fetch(FB_URL + path + '.json', {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
       body: JSON.stringify(data)
     });
-  } catch(e) { console.warn('fbSet err', e); }
+    return r.ok;
+  } catch(e) { return false; }
 }
-
 async function fbPatch(path, data) {
-  if (!FB_URL) return;
   try {
-    await fetch(FB_URL + path + '.json', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+    const r = await fetch(FB_URL + path + '.json', {
+      method: 'PATCH', headers: {'Content-Type':'application/json'},
       body: JSON.stringify(data)
     });
-  } catch(e) { console.warn('fbPatch err', e); }
+    return r.ok;
+  } catch(e) { return false; }
 }
-
 async function fbGet(path) {
-  if (!FB_URL) return null;
   try {
     const r = await fetch(FB_URL + path + '.json');
     if (!r.ok) return null;
-    return await r.json();
+    const d = await r.json();
+    return d;
   } catch(e) { return null; }
 }
-
 async function fbDelete(path) {
-  if (!FB_URL) return;
-  try {
-    await fetch(FB_URL + path + '.json', { method: 'DELETE' });
-  } catch(e) {}
+  try { await fetch(FB_URL + path + '.json', {method:'DELETE'}); } catch(e) {}
 }
 
-// ── Polling léger (SSE non dispo en REST simple) ──
+// ── Test connexion Firebase + affiche aide si bloqué ──
+async function testFirebase() {
+  const testVal = { test: 1, ts: Date.now() };
+  const ok = await fbSet('/ping', testVal);
+  if (!ok) {
+    // Afficher l'écran d'aide Firebase rules
+    document.getElementById('fb-rules-help').style.display = 'flex';
+    return false;
+  }
+  await fbDelete('/ping');
+  return true;
+}
+
+// ── Démarrer le polling ──
 function startPolling() {
-  // Positions des autres joueurs (toutes les 300ms)
-  fbPresenceInterval = setInterval(async () => {
+  if (pollingStarted) return;
+  pollingStarted = true;
+
+  // Présence toutes les 500ms
+  setInterval(async () => {
+    if (!roomId) return;
     const all = await fbGet('/rooms/' + roomId + '/presence');
-    if (!all) return;
+    if (!all || typeof all !== 'object') return;
+    const now = Date.now();
     Object.entries(all).forEach(([id, v]) => {
-      if (id === ME.id) return;
-      if (Date.now() - v.ts > 8000) return; // ignoré si vieux
-      visitors[id] = { ...v, lastSeen: Date.now() };
+      if (id === ME.id || !v || now - (v.ts||0) > 10000) return;
+      visitors[id] = { ...v, lastSeen: now };
     });
-    // Purger disparus
     Object.keys(visitors).forEach(id => {
-      if (Date.now() - visitors[id].lastSeen > 8000) delete visitors[id];
+      if (now - (visitors[id].lastSeen||0) > 10000) delete visitors[id];
     });
     updateVList();
-  }, 300);
+  }, 500);
 
-  // Galerie (toutes les 2s pour les visiteurs)
+  // Galerie toutes les 3s (visiteurs)
   if (ME.role !== 'artist') {
-    fbGalleryInterval = setInterval(async () => {
+    setInterval(async () => {
+      if (!roomId) return;
       const g = await fbGet('/rooms/' + roomId + '/gallery');
       if (!g) return;
-      // Recharger les artworks depuis Firebase (sans les dataUrl trop lourds → séparés)
-      const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
-      if (artMeta) {
-        // Fusionner meta + dataUrls déjà en cache local
-        S.artworks = artMeta.map(a => {
-          const local = S.artworks.find(x => x.id === a.id);
-          return { ...a, dataUrl: local ? local.dataUrl : (a.dataUrl || null) };
-        });
-        // Charger les images manquantes
-        S.artworks.forEach(a => { if (!a.dataUrl) loadArtworkData(a.id); });
-      }
       S.museumName = g.museumName || 'Musée';
       document.getElementById('museum-label').textContent = '🏛 ' + S.museumName;
-    }, 2000);
+      const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
+      if (!artMeta || !Array.isArray(artMeta)) return;
+      S.artworks = artMeta.map(a => {
+        const cached = S.artworks.find(x => x.id === a.id);
+        return { ...a, dataUrl: (cached && cached.dataUrl) ? cached.dataUrl : null };
+      });
+      S.artworks.forEach(a => { if (!a.dataUrl) loadArtworkData(a.id); });
+    }, 3000);
   }
 
-  // Chat (toutes les 1.5s)
+  // Chat toutes les 2s
   setInterval(async () => {
+    if (!roomId) return;
     const msgs = await fbGet('/rooms/' + roomId + '/chat');
-    if (!msgs) return;
+    if (!msgs || typeof msgs !== 'object') return;
+    if (lastChatTs === 0) { lastChatTs = Date.now(); return; }
     Object.values(msgs)
-      .filter(m => m.ts > lastChatTs && m.id !== ME.id)
+      .filter(m => m && m.ts > lastChatTs && m.id !== ME.id)
       .sort((a,b) => a.ts - b.ts)
-      .forEach(m => {
-        lastChatTs = Math.max(lastChatTs, m.ts);
-        showBubble(m.name || 'Quelqu\'un', m.text);
-      });
-    // Init lastChatTs au démarrage
-    if (lastChatTs === 0) {
-      lastChatTs = Date.now();
-    }
-  }, 1500);
+      .forEach(m => { lastChatTs = Math.max(lastChatTs, m.ts); showBubble(m.name||'?', m.text); });
+  }, 2000);
 }
 
-// ── Charger image depuis Firebase pour les visiteurs ──
+// ── Charger image d'un tableau (visiteur) ──
 async function loadArtworkData(artId) {
   const data = await fbGet('/rooms/' + roomId + '/artwork_data/' + artId);
   if (data && data.dataUrl) {
@@ -1853,67 +1846,46 @@ async function loadArtworkData(artId) {
   }
 }
 
-// ── Envoyer ma position (throttlé dans loop) ──
+// ── Envoyer position ──
 function broadcast() {
   const now = Date.now();
-  if (now - lastBcast < 250) return; // 4fps suffisent pour la position
+  if (!roomId || now - lastBcast < 400) return;
   lastBcast = now;
   fbPatch('/rooms/' + roomId + '/presence/' + ME.id, {
     id: ME.id, x: Math.round(PL.x), y: Math.round(PL.y),
     angle: +PL.angle.toFixed(2), name: ME.name, emoji: ME.emoji,
-    moving: PL.moving, ts: Date.now()
+    moving: PL.moving, ts: now
   });
 }
 
-// ── Publier la galerie (artiste seulement) ──
+// ── Publier galerie ──
 async function broadcastGallery() {
   if (!roomId) return;
-  // 1. Métadonnées légères (sans les dataUrl)
   const meta = S.artworks.map(a => ({
-    id: a.id, title: a.title, desc: a.desc||'',
-    placed: a.placed, frameIdx: a.frameIdx, addedAt: a.addedAt||''
+    id:a.id, title:a.title, desc:a.desc||'',
+    placed:a.placed, frameIdx:a.frameIdx, addedAt:a.addedAt||''
   }));
-  await fbSet('/rooms/' + roomId + '/artworks_meta', meta);
-  // 2. Gallery info
   await fbSet('/rooms/' + roomId + '/gallery', { museumName: S.museumName, ts: Date.now() });
-  // 3. Images (séparément, en parallèle)
+  await fbSet('/rooms/' + roomId + '/artworks_meta', meta);
   for (const a of S.artworks) {
-    if (a.dataUrl) {
-      fbSet('/rooms/' + roomId + '/artwork_data/' + a.id, { dataUrl: a.dataUrl });
-    }
+    if (a.dataUrl) fbSet('/rooms/' + roomId + '/artwork_data/' + a.id, { dataUrl: a.dataUrl });
   }
-  // 4. Local save also
   save();
 }
 
-// ── Envoyer un message chat ──
+// ── Envoyer message chat ──
 async function sendMsg(text) {
   closePanel('messages-panel');
   const ts = Date.now();
-  const key = 'msg_' + ts + '_' + ME.id.substr(0,4);
   await fbPatch('/rooms/' + roomId + '/chat', {
-    [key]: { id: ME.id, name: ME.name, text, ts }
+    ['m_'+ts]: { id: ME.id, name: ME.name, text, ts }
   });
   showBubble(ME.name, text);
-  // Nettoyer les vieux messages (garder les 20 derniers)
-  setTimeout(async () => {
-    const all = await fbGet('/rooms/' + roomId + '/chat');
-    if (all) {
-      const keys = Object.keys(all).sort();
-      if (keys.length > 20) {
-        for (const k of keys.slice(0, keys.length - 20)) {
-          fbDelete('/rooms/' + roomId + '/chat/' + k);
-        }
-      }
-    }
-  }, 5000);
 }
-
 function sendCustom() {
   const t = document.getElementById('custom-msg').value.trim(); if (!t) return;
   document.getElementById('custom-msg').value = ''; sendMsg(t);
 }
-
 function showBubble(name, text) {
   const area = document.getElementById('chat-area');
   area.style.display = 'flex';
@@ -1923,20 +1895,16 @@ function showBubble(name, text) {
   setTimeout(() => { b.remove(); if (!area.children.length) area.style.display = 'none'; }, 5200);
 }
 
-// ── Liste des visiteurs ──
+// ── Liste visiteurs ──
 function updateVList() {
   const vkeys = Object.keys(visitors);
   document.getElementById('vcnt').textContent = vkeys.length;
   const list = document.getElementById('vlist');
-  if (!vkeys.length) {
-    list.innerHTML = '<div class="empty-state">Personne encore… Partagez le lien ! ✨</div>';
-    return;
-  }
+  if (!vkeys.length) { list.innerHTML = '<div class="empty-state">Personne encore… Partagez le lien ! ✨</div>'; return; }
   list.innerHTML = vkeys.map(id => `
     <div class="vitem"><div class="vi-av">${visitors[id].emoji||'🌸'}</div>
     <div><div class="vi-name">${visitors[id].name||'Visiteur'}</div>
-    <div class="vi-st">En visite actuellement 🟢</div></div></div>
-  `).join('');
+    <div class="vi-st">En visite 🟢</div></div></div>`).join('');
 }
 
 // ── Init multijoueur ──
@@ -1944,53 +1912,43 @@ async function initMulti() {
   const params = new URLSearchParams(window.location.search);
   const room = params.get('room');
   const asVisitor = params.get('visitor') === '1';
-  const fbParam = params.get('fb'); // URL Firebase encodée dans le lien visiteur
 
-  if (asVisitor && fbParam) {
-    // ── VISITEUR avec lien complet : on extrait l'URL Firebase du lien
-    // Pas besoin de configurer Firebase, tout est dans le lien !
-    FB_URL = decodeURIComponent(fbParam);
-    localStorage.setItem('musee_fb_url', FB_URL); // mémoriser pour prochaine visite
-  } else {
-    // ── ARTISTE (ou visiteur sans paramètre fb) : vérifier la config Firebase
-    const ready = await fbReady();
-    if (!ready) return; // mode hors-ligne, on continue sans multi
-  }
-
-  if (room) {
+  if (asVisitor && room) {
+    // ── MODE VISITEUR ──
     roomId = room;
-    if (asVisitor) {
-      notify('⏳ Chargement de la galerie…');
-      const g = await fbGet('/rooms/' + roomId + '/gallery');
-      const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
-      if (artMeta) {
-        S.artworks = artMeta;
-        S.artworks.forEach(a => loadArtworkData(a.id));
-      }
-      if (g) { S.museumName = g.museumName || 'Musée'; }
-      setTimeout(() => notify('🎨 Bienvenue dans la galerie !'), 1200);
+    notify('⏳ Chargement de la galerie…');
+    // Test Firebase d'abord
+    const fbOk = await testFirebase();
+    if (!fbOk) return;
+    const g = await fbGet('/rooms/' + roomId + '/gallery');
+    const artMeta = await fbGet('/rooms/' + roomId + '/artworks_meta');
+    if (artMeta && Array.isArray(artMeta)) {
+      S.artworks = artMeta;
+      S.artworks.forEach(a => loadArtworkData(a.id));
     }
+    if (g) S.museumName = g.museumName || 'Musée';
+    document.getElementById('museum-label').textContent = '🏛 ' + S.museumName;
+    setTimeout(() => notify('🎨 Bienvenue dans la galerie !'), 800);
+
   } else {
-    // Artiste : roomId = activeGalleryId choisi dans le sélecteur de galeries
-    roomId = activeGalleryId || localStorage.getItem('musee_room_id') || ('r_' + Date.now() + '_' + Math.random().toString(36).substr(2,8));
+    // ── MODE ARTISTE ──
+    roomId = activeGalleryId || localStorage.getItem('musee_room_id')
+             || ('r_' + Date.now() + '_' + Math.random().toString(36).substr(2,8));
     activeGalleryId = roomId;
     localStorage.setItem('musee_room_id', roomId);
     window.history.replaceState({}, '', '?room=' + roomId);
+    // Test Firebase + publier galerie
+    const fbOk = await testFirebase();
+    if (fbOk) await broadcastGallery();
   }
 
-  // Lien de partage : on encode l'URL Firebase dedans pour les visiteurs
-  const fbEncoded = FB_URL ? encodeURIComponent(FB_URL) : '';
-  const shareUrl = window.location.origin + window.location.pathname
-    + '?room=' + roomId + '&visitor=1'
-    + (fbEncoded ? '&fb=' + fbEncoded : '');
+  // Lien de partage
+  const shareUrl = window.location.origin + window.location.pathname + '?room=' + roomId + '&visitor=1';
   document.getElementById('share-url').textContent = shareUrl;
   document.getElementById('museum-label').textContent = '🏛 ' + (S.museumName || 'Mon Musée');
 
-  window.addEventListener('beforeunload', () => {
-    fbDelete('/rooms/' + roomId + '/presence/' + ME.id);
-  });
+  window.addEventListener('beforeunload', () => fbDelete('/rooms/' + roomId + '/presence/' + ME.id));
 
-  if (ME.role === 'artist') await broadcastGallery();
   lastChatTs = Date.now();
   startPolling();
 }
@@ -2154,5 +2112,25 @@ window.addEventListener('load',()=>{
   </div>
 </div>
 
+<!-- FIREBASE RULES HELP -->
+
+<div id="fb-rules-help" style="position:fixed;inset:0;z-index:9900;display:none;align-items:center;justify-content:center;background:rgba(5,2,0,0.98);padding:16px">
+  <div style="background:#120804;border:1px solid #E07070;padding:24px;max-width:380px;width:100%">
+    <div style="font-family:'Playfair Display',serif;font-size:20px;color:#F0D080;margin-bottom:10px;text-align:center">&#x26A0;&#xFE0F; Firebase bloque l'acc&#232;s</div>
+    <div style="color:#D4B880;font-size:13px;line-height:1.8;margin-bottom:16px">
+      Il faut autoriser l'acc&#232;s &#224; la base de donn&#233;es :<br><br>
+      <b style="color:#C9A84C">1.</b> Allez sur <b style="color:#F0D080">console.firebase.google.com</b><br>
+      <b style="color:#C9A84C">2.</b> Votre projet &#8594; <b style="color:#F0D080">Realtime Database</b><br>
+      <b style="color:#C9A84C">3.</b> Onglet <b style="color:#F0D080">R&#232;gles</b><br>
+      <b style="color:#C9A84C">4.</b> Remplacez tout par :<br>
+    </div>
+    <div style="background:#0A0503;border:1px solid rgba(201,168,76,.4);padding:12px;font-family:monospace;font-size:12px;color:#F0D080;margin-bottom:14px;line-height:1.8">
+      {&quot;rules&quot;:{&quot;.read&quot;:true,&quot;.write&quot;:true}}
+    </div>
+    <div style="color:#D4B880;font-size:13px;margin-bottom:16px"><b style="color:#C9A84C">5.</b> Cliquez <b style="color:#F0D080">Publier</b> puis revenez ici !</div>
+    <button onclick="location.reload()" style="width:100%;padding:14px;background:linear-gradient(135deg,#8B6520,#F0D080,#8B6520);color:#0D0500;border:none;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:8px">&#x1F504; R&#233;essayer</button>
+    <button onclick="document.getElementById('fb-rules-help').style.display='none'" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(201,168,76,.3);color:#C9A84C;font-size:13px;cursor:pointer">Continuer sans partage</button>
+  </div>
+</div>
 </body>
 </html>
