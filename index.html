@@ -2108,7 +2108,7 @@ function launchGame(){
   if(mob)document.getElementById('jc').style.display='block';
   if(ME.role==='artist'){
     document.querySelectorAll('.owner-only').forEach(b=>b.style.display='flex');
-    player_name_label=ME.name;
+    // (name tag rendered in drawPlayer)
   }
   document.getElementById('museum-label').textContent='🏛 '+(S.museumName||'Mon Musée');
   PL.x=WW/2;PL.y=WH/2;
@@ -2135,6 +2135,16 @@ window.addEventListener('load',()=>{
   },2500);
 });
 </script>
+
+<!-- GALLERY PICKER -->
+
+<div id="gallery-picker" style="position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 40% 40%,#1C0E06 0%,#070301 100%);overflow:hidden">
+  <div class="gp-wrap">
+    <div class="gp-title">🎨 Mes Galeries</div>
+    <div class="gp-sub">Choisissez une galerie à ouvrir ou créez-en une nouvelle.<br>Vos peintures sont sauvegardées automatiquement !</div>
+    <div id="gp-grid"></div>
+  </div>
+</div>
 
 </body>
 </html>
