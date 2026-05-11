@@ -4,6 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Le Musée de Maman 🎨</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -207,11 +210,16 @@ body.moving #cursor::before{content:‘👣’}
   ml.rel="manifest"; ml.href=URL.createObjectURL(mb);
   document.head.appendChild(ml);
   if("serviceWorker" in navigator){
-    var sc="const CACHE='musee-v1';self.addEventListener('install',e=>{  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])));  self.skipWaiting();});self.addEventListener('activate',e=>{  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));  self.clients.claim();});self.addEventListener('fetch',e=>{  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});";
+    var sc="const CACHE='musee-v4';self.addEventListener('install',e=>{self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{const url=e.request.url;if(url.includes('firebasedatabase')||url.includes('googleapis')){return;}e.respondWith(fetch(e.request).then(r=>{if(r&&r.status===200){const clone=r.clone();caches.open(CACHE).then(c=>c.put(e.request,clone));}return r;}).catch(()=>caches.match(e.request)));});";
     var sb=new Blob([sc],{type:"application/javascript"});
     var su=URL.createObjectURL(sb);
     navigator.serviceWorker.register(su,{scope:"./"})
-      .then(function(){console.log("SW OK");})
+      .then(function(reg){
+        console.log("SW OK");
+        // Forcer la mise à jour immédiate
+        reg.update();
+        if(reg.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'});}
+      })
       .catch(function(e){console.warn("SW err",e);});
   }
   var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
