@@ -434,19 +434,37 @@ body.moving #cursor::before{content:‘👣’}
     <h3>🎨 Recadrer &amp; nommer</h3>
 
 ```
-<!-- Crop zone -->
-<div id="crop-wrap" style="position:relative;width:100%;aspect-ratio:3/2;background:#0A0503;overflow:hidden;touch-action:none;cursor:crosshair;margin-bottom:4px;border:1px solid rgba(201,168,76,.3)">
-  <canvas id="crop-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-  <!-- Crop overlay frame -->
-  <div id="crop-frame" style="position:absolute;border:2px solid #F0D080;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);pointer-events:none"></div>
+<!-- Crop zone : image fixe, cadre mobile -->
+<div id="crop-wrap" style="position:relative;width:100%;background:#0A0503;overflow:hidden;touch-action:none;margin-bottom:4px;border:1px solid rgba(201,168,76,.3);user-select:none">
+  <img id="crop-img" style="display:block;width:100%;height:auto;pointer-events:none;user-select:none" src="" alt="">
+  <!-- Masque sombre autour du cadre -->
+  <div id="crop-mask-t" style="position:absolute;left:0;right:0;top:0;background:rgba(0,0,0,0.55);pointer-events:none"></div>
+  <div id="crop-mask-b" style="position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);pointer-events:none"></div>
+  <div id="crop-mask-l" style="position:absolute;background:rgba(0,0,0,0.55);pointer-events:none"></div>
+  <div id="crop-mask-r" style="position:absolute;background:rgba(0,0,0,0.55);pointer-events:none"></div>
+  <!-- Cadre doré avec poignées aux coins -->
+  <div id="crop-frame" style="position:absolute;border:2px solid #F0D080;box-sizing:border-box;touch-action:none">
+    <div class="crop-handle" id="ch-tl" style="position:absolute;top:-6px;left:-6px;width:16px;height:16px;border-top:3px solid #F0D080;border-left:3px solid #F0D080;cursor:nw-resize"></div>
+    <div class="crop-handle" id="ch-tr" style="position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-top:3px solid #F0D080;border-right:3px solid #F0D080;cursor:ne-resize"></div>
+    <div class="crop-handle" id="ch-bl" style="position:absolute;bottom:-6px;left:-6px;width:16px;height:16px;border-bottom:3px solid #F0D080;border-left:3px solid #F0D080;cursor:sw-resize"></div>
+    <div class="crop-handle" id="ch-br" style="position:absolute;bottom:-6px;right:-6px;width:16px;height:16px;border-bottom:3px solid #F0D080;border-right:3px solid #F0D080;cursor:se-resize"></div>
+    <!-- Grille tiers -->
+    <div style="position:absolute;inset:0;pointer-events:none">
+      <div style="position:absolute;left:33.3%;top:0;bottom:0;border-left:1px solid rgba(240,208,128,0.3)"></div>
+      <div style="position:absolute;left:66.6%;top:0;bottom:0;border-left:1px solid rgba(240,208,128,0.3)"></div>
+      <div style="position:absolute;top:33.3%;left:0;right:0;border-top:1px solid rgba(240,208,128,0.3)"></div>
+      <div style="position:absolute;top:66.6%;left:0;right:0;border-top:1px solid rgba(240,208,128,0.3)"></div>
+    </div>
+  </div>
 </div>
-<!-- Crop controls -->
+<div style="color:#9A7850;font-size:11px;text-align:center;margin-bottom:8px">Glissez le cadre · Tirez les coins pour redimensionner</div>
+<!-- Ratio rapide -->
 <div style="display:flex;gap:6px;margin-bottom:10px">
-  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(3,2)">3:2</button>
-  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(1,1)">1:1</button>
-  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(4,3)">4:3</button>
-  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropAspect(2,3)">2:3</button>
-  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropReset()">⟳</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropSetRatio(3,2)">3:2</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropSetRatio(1,1)">1:1</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropSetRatio(4,3)">4:3</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropSetRatio(2,3)">2:3</button>
+  <button class="btn-secondary" style="flex:1;font-size:11px;padding:8px" onclick="cropFull()">⟳</button>
 </div>
 
 <input class="inp" id="ap-title" type="text" placeholder="Titre du tableau…" maxlength="40">
@@ -1471,180 +1489,169 @@ function trigCam(){document.getElementById('f-cam').click();}
 function trigGal(){document.getElementById('f-gal').click();}
 
 // ─── CROP ENGINE ───
-let cropState = {
-  img: null,          // Image object
-  // Image transform (pan + zoom)
-  ox: 0, oy: 0,      // offset of image center in canvas coords
-  scale: 1,           // zoom level
-  // Crop rect (in canvas %)
-  cx: 0.05, cy: 0.05, cw: 0.90, ch: 0.90,
-  // Drag state
-  dragging: false, lastX: 0, lastY: 0,
-  pinching: false, lastDist: 0,
-  // Current aspect
-  aspect: 3/2,
-  // Canvas element
-  cv: null, ctx2: null, wrap: null
-};
+// ── NOUVEAU CROP ENGINE : cadre mobile sur image fixe ──
+// cropBox = {x,y,w,h} en pixels dans l'espace display (relatif au wrap)
+let cropImg = null;         // dataUrl original
+let cropBox = {x:20,y:20,w:200,h:133}; // cadre en pixels display
+let cropDrag = null;        // {type:'move'|'tl'|'tr'|'bl'|'br', sx,sy, bx,by,bw,bh}
+let cropWrapW = 0, cropWrapH = 0; // taille du conteneur en display px
+let cropImgNatW = 0, cropImgNatH = 0; // taille naturelle de l'image
 
-function initCropCanvas() {
-  cropState.cv = document.getElementById('crop-canvas');
-  cropState.ctx2 = cropState.cv.getContext('2d');
-  cropState.wrap = document.getElementById('crop-wrap');
-  const w = cropState.wrap.clientWidth || 340;
-  const h = w * 2/3;
-  cropState.cv.width = w * 2;   // retina
-  cropState.cv.height = h * 2;
-  cropState.cv.style.width = w + 'px';
-  cropState.cv.style.height = h + 'px';
-
-  // Touch events
-  const el = cropState.wrap;
-  el.addEventListener('touchstart',  cropTouchStart,  {passive:false});
-  el.addEventListener('touchmove',   cropTouchMove,   {passive:false});
-  el.addEventListener('touchend',    cropTouchEnd,    {passive:false});
-  el.addEventListener('mousedown',   cropMouseDown);
-  el.addEventListener('mousemove',   cropMouseMove);
-  el.addEventListener('mouseup',     cropMouseUp);
-  el.addEventListener('wheel',       cropWheel,       {passive:false});
-}
-
-function loadCropImage(dataUrl) {
-  const img = new Image();
-  img.onload = () => {
-    cropState.img = img;
-    // Fit image into canvas
-    const cw = cropState.cv.width, ch = cropState.cv.height;
-    const sx = cw / img.width, sy = ch / img.height;
-    cropState.scale = Math.max(sx, sy) * 0.95;
-    cropState.ox = cw / 2;
-    cropState.oy = ch / 2;
-    cropAspect(3, 2);
+function initCropUI(dataUrl){
+  cropImg = dataUrl;
+  const imgEl = document.getElementById('crop-img');
+  imgEl.src = dataUrl;
+  imgEl.onload = () => {
+    cropImgNatW = imgEl.naturalWidth;
+    cropImgNatH = imgEl.naturalHeight;
+    const wrap = document.getElementById('crop-wrap');
+    // Attendre que le layout soit calculé
+    requestAnimationFrame(() => {
+      cropWrapW = wrap.clientWidth;
+      cropWrapH = imgEl.clientHeight || wrap.clientHeight;
+      // Cadre initial = plein (80% de la zone)
+      const pad = Math.min(cropWrapW, cropWrapH) * 0.08;
+      cropBox = {x:pad, y:pad, w:cropWrapW-pad*2, h:cropWrapH-pad*2};
+      renderCropUI();
+      attachCropEvents();
+    });
   };
-  img.src = dataUrl;
 }
 
-function cropReset() {
-  if (!cropState.img) return;
-  const cw = cropState.cv.width, ch = cropState.cv.height;
-  const sx = cw / cropState.img.width, sy = ch / cropState.img.height;
-  cropState.scale = Math.max(sx, sy) * 0.95;
-  cropState.ox = cw / 2; cropState.oy = ch / 2;
-  renderCrop();
-}
-
-function cropAspect(aw, ah) {
-  cropState.aspect = aw / ah;
-  // Center crop rect, max size
-  const cw = cropState.cv.width, ch = cropState.cv.height;
-  let fw = cw * 0.88, fh = fw / cropState.aspect;
-  if (fh > ch * 0.88) { fh = ch * 0.88; fw = fh * cropState.aspect; }
-  cropState.cx = (cw - fw) / 2 / cw;
-  cropState.cy = (ch - fh) / 2 / ch;
-  cropState.cw = fw / cw;
-  cropState.ch = fh / ch;
-  updateCropFrame();
-  renderCrop();
-}
-
-function updateCropFrame() {
+function renderCropUI(){
+  const wrap = document.getElementById('crop-wrap');
+  cropWrapH = document.getElementById('crop-img').clientHeight || cropWrapH;
+  const {x,y,w,h} = cropBox;
+  // Cadre
   const frame = document.getElementById('crop-frame');
-  const wrap = cropState.wrap;
-  const dw = wrap.clientWidth, dh = wrap.clientHeight;
-  // Convert from canvas coords to display coords
-  const s = dw / cropState.cv.width; // display/canvas ratio
-  const fx = cropState.cx * cropState.cv.width * s;
-  const fy = cropState.cy * cropState.cv.height * s;
-  const fw = cropState.cw * cropState.cv.width * s;
-  const fh = cropState.ch * cropState.cv.height * s;
-  frame.style.left   = fx + 'px';
-  frame.style.top    = fy + 'px';
-  frame.style.width  = fw + 'px';
-  frame.style.height = fh + 'px';
+  frame.style.left = x+'px'; frame.style.top = y+'px';
+  frame.style.width = w+'px'; frame.style.height = h+'px';
+  // Masques
+  document.getElementById('crop-mask-t').style.height = y+'px';
+  document.getElementById('crop-mask-b').style.height = (cropWrapH - y - h)+'px';
+  const ml = document.getElementById('crop-mask-l');
+  ml.style.top = y+'px'; ml.style.height = h+'px';
+  ml.style.left = '0'; ml.style.width = x+'px';
+  const mr = document.getElementById('crop-mask-r');
+  mr.style.top = y+'px'; mr.style.height = h+'px';
+  mr.style.right = '0'; mr.style.width = (cropWrapW-x-w)+'px';
 }
 
-function renderCrop() {
-  if (!cropState.img || !cropState.ctx2) return;
-  const { ctx2: c, cv, img, ox, oy, scale } = cropState;
-  c.clearRect(0, 0, cv.width, cv.height);
-  c.save();
-  c.translate(ox, oy);
-  c.scale(scale, scale);
-  c.drawImage(img, -img.width/2, -img.height/2);
-  c.restore();
+function cropSetRatio(rw, rh){
+  const ratio = rw/rh;
+  // Garder le centre, ajuster les dimensions
+  const cx = cropBox.x + cropBox.w/2;
+  const cy = cropBox.y + cropBox.h/2;
+  let nw = cropBox.w, nh = nw/ratio;
+  if(nh > cropWrapH*0.9){ nh = cropWrapH*0.9; nw = nh*ratio; }
+  if(nw > cropWrapW*0.9){ nw = cropWrapW*0.9; nh = nw/ratio; }
+  cropBox = clampBox({x:cx-nw/2, y:cy-nh/2, w:nw, h:nh});
+  renderCropUI();
 }
 
-// Produce cropped dataUrl for saving
-function getCroppedDataUrl() {
-  const { cv, ctx2: c, img, ox, oy, scale, cx, cy, cw, ch } = cropState;
-  const fw = cw * cv.width, fh = ch * cv.height;
-  const fx = cx * cv.width,  fy = cy * cv.height;
+function cropFull(){
+  const pad = Math.min(cropWrapW,cropWrapH)*0.06;
+  cropBox = {x:pad, y:pad, w:cropWrapW-pad*2, h:cropWrapH-pad*2};
+  renderCropUI();
+}
+
+function clampBox(b){
+  const minS = 40;
+  let {x,y,w,h} = b;
+  if(w < minS) w = minS;
+  if(h < minS) h = minS;
+  if(x < 0) x = 0;
+  if(y < 0) y = 0;
+  if(x+w > cropWrapW) x = cropWrapW-w;
+  if(y+h > cropWrapH) y = cropWrapH-h;
+  if(x < 0) { x=0; w=Math.min(w,cropWrapW); }
+  if(y < 0) { y=0; h=Math.min(h,cropWrapH); }
+  return {x,y,w,h};
+}
+
+function attachCropEvents(){
+  const frame = document.getElementById('crop-frame');
+  const wrap  = document.getElementById('crop-wrap');
+  // Supprimer anciens listeners via clonage
+  const newFrame = frame.cloneNode(true);
+  frame.parentNode.replaceChild(newFrame, frame);
+  const nf = document.getElementById('crop-frame');
+
+  function getEvtPos(e, wrap){
+    const r = wrap.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { ex: src.clientX - r.left, ey: src.clientY - r.top };
+  }
+
+  function onStart(e, handleType){
+    e.preventDefault(); e.stopPropagation();
+    const {ex,ey} = getEvtPos(e, wrap);
+    cropDrag = {type:handleType, sx:ex, sy:ey, bx:cropBox.x, by:cropBox.y, bw:cropBox.w, bh:cropBox.h};
+  }
+
+  // Déplacer le cadre entier (clic sur le cadre hors coins)
+  nf.addEventListener('touchstart', e=>{ if(e.target===nf||e.target.tagName==='DIV'&&!e.target.className.includes('crop-handle')) onStart(e,'move'); }, {passive:false});
+  nf.addEventListener('mousedown',  e=>{ if(e.target===nf||(!e.target.id.startsWith('ch-'))) onStart(e,'move'); });
+
+  // Poignées de coin
+  ['tl','tr','bl','br'].forEach(id=>{
+    const el = document.getElementById('ch-'+id);
+    if(!el) return;
+    el.addEventListener('touchstart', e=>onStart(e,id), {passive:false});
+    el.addEventListener('mousedown',  e=>onStart(e,id));
+  });
+
+  function onMove(e){
+    if(!cropDrag) return;
+    e.preventDefault();
+    const {ex,ey} = getEvtPos(e, wrap);
+    const dx = ex - cropDrag.sx, dy = ey - cropDrag.sy;
+    const {bx,by,bw,bh,type} = cropDrag;
+    let nb;
+    if(type==='move'){
+      nb = clampBox({x:bx+dx, y:by+dy, w:bw, h:bh});
+    } else if(type==='br'){
+      nb = clampBox({x:bx, y:by, w:bw+dx, h:bh+dy});
+    } else if(type==='bl'){
+      nb = clampBox({x:bx+dx, y:by, w:bw-dx, h:bh+dy});
+    } else if(type==='tr'){
+      nb = clampBox({x:bx, y:by+dy, w:bw+dx, h:bh-dy});
+    } else if(type==='tl'){
+      nb = clampBox({x:bx+dx, y:by+dy, w:bw-dx, h:bh-dy});
+    }
+    if(nb){ cropBox=nb; renderCropUI(); }
+  }
+
+  document.addEventListener('touchmove', onMove, {passive:false});
+  document.addEventListener('mousemove',  onMove);
+  document.addEventListener('touchend',  ()=>{ cropDrag=null; });
+  document.addEventListener('mouseup',   ()=>{ cropDrag=null; });
+}
+
+function getCroppedDataUrl(){
+  if(!cropImg || !cropImgNatW) return cropImg;
+  // Ratio display→naturel
+  const imgEl = document.getElementById('crop-img');
+  const dispW = imgEl.clientWidth  || cropWrapW;
+  const dispH = imgEl.clientHeight || cropWrapH;
+  const scaleX = cropImgNatW / dispW;
+  const scaleY = cropImgNatH / dispH;
+  const sx = Math.round(cropBox.x * scaleX);
+  const sy = Math.round(cropBox.y * scaleY);
+  const sw = Math.round(cropBox.w * scaleX);
+  const sh = Math.round(cropBox.h * scaleY);
   const out = document.createElement('canvas');
-  out.width = Math.round(fw); out.height = Math.round(fh);
+  out.width  = sw; out.height = sh;
   const oc = out.getContext('2d');
-  oc.save();
-  oc.translate(-fx, -fy);
-  oc.translate(ox, oy);
-  oc.scale(scale, scale);
-  oc.drawImage(img, -img.width/2, -img.height/2);
-  oc.restore();
+  const src = new Image();
+  src.src = cropImg;
+  oc.drawImage(src, sx, sy, sw, sh, 0, 0, sw, sh);
   return out.toDataURL('image/jpeg', 0.88);
-}
-
-// ── Touch/Mouse handlers for pan ──
-function cropPointerStart(x, y) { cropState.dragging = true; cropState.lastX = x; cropState.lastY = y; }
-function cropPointerMove(x, y) {
-  if (!cropState.dragging) return;
-  cropState.ox += (x - cropState.lastX) * 2; // *2 for retina
-  cropState.oy += (y - cropState.lastY) * 2;
-  cropState.lastX = x; cropState.lastY = y;
-  renderCrop();
-}
-function cropPointerEnd() { cropState.dragging = false; }
-
-function cropMouseDown(e) { cropPointerStart(e.offsetX, e.offsetY); }
-function cropMouseMove(e) { if (e.buttons) cropPointerMove(e.offsetX, e.offsetY); }
-function cropMouseUp()    { cropPointerEnd(); }
-
-function cropTouchStart(e) {
-  e.preventDefault();
-  if (e.touches.length === 1) {
-    const r = cropState.wrap.getBoundingClientRect();
-    cropPointerStart(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
-  } else if (e.touches.length === 2) {
-    cropState.dragging = false; cropState.pinching = true;
-    cropState.lastDist = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-  }
-}
-function cropTouchMove(e) {
-  e.preventDefault();
-  const r = cropState.wrap.getBoundingClientRect();
-  if (cropState.pinching && e.touches.length === 2) {
-    const dist = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-    cropState.scale *= dist / cropState.lastDist;
-    cropState.scale = Math.max(0.3, Math.min(8, cropState.scale));
-    cropState.lastDist = dist;
-    renderCrop();
-  } else if (cropState.dragging && e.touches.length === 1) {
-    cropPointerMove(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
-  }
-}
-function cropTouchEnd(e) { cropState.pinching = false; cropPointerEnd(); }
-function cropWheel(e) {
-  e.preventDefault();
-  cropState.scale *= e.deltaY < 0 ? 1.08 : 0.93;
-  cropState.scale = Math.max(0.3, Math.min(8, cropState.scale));
-  renderCrop();
 }
 
 // ── Lifecycle ──
 function handleFile(inp) {
+
   const file = inp.files[0]; if (!file) return;
   closePanel('place-panel');
   const rd = new FileReader();
@@ -1653,11 +1660,8 @@ function handleFile(inp) {
     document.getElementById('ap-title').value = '';
     document.getElementById('ap-desc').value = '';
     document.getElementById('art-popup').style.display = 'flex';
-    // Init crop on next frame (DOM needs to render first)
-    requestAnimationFrame(() => {
-      initCropCanvas();
-      loadCropImage(pendingImg);
-    });
+    // Init crop sur image fixe
+    requestAnimationFrame(() => initCropUI(pendingImg));
   };
   rd.readAsDataURL(file);
   inp.value = '';
@@ -1679,7 +1683,7 @@ function confirmArt() {
 }
 function closeArtPopup() {
   document.getElementById('art-popup').style.display = 'none';
-  pendingImg = null; cropState.img = null;
+  pendingImg = null; cropImg = null;
 }
 
 // ─ Collection panel ─
@@ -1913,6 +1917,7 @@ async function initMulti(){
                  +'?room='+roomId+'&visitor=1';
   document.getElementById('share-url').textContent=shareUrl;
   document.getElementById('museum-label').textContent='🏛 '+(S.museumName||'Mon Musée');
+  document.title='🎨 '+(S.museumName||'Mon Musée');
 
   window.addEventListener('beforeunload',()=>fbDel('/rooms/'+roomId+'/presence/'+ME.id));
   lastChatTs=Date.now();
@@ -2014,9 +2019,21 @@ function createNewGallery(){
 
 function openGallery(id){
   document.getElementById('gallery-picker').style.display = 'none';
-  loadGallery(id);
+  // Si nouvelle galerie (rien en storage), on sauvegarde d'abord le nom saisi
+  const existing = localStorage.getItem(galKey(id));
+  if(!existing && S.museumName && S.museumName !== 'Mon Musée'){
+    activeGalleryId = id;
+    save(); // persiste le nom tapé dans l'onboarding
+  }
+  loadGallery(id); // charge les données (nom compris)
   localStorage.setItem('musee_room_id', id);
   activeGalleryId = id;
+  // S'assurer que le nom est bien défini
+  if(!S.museumName || S.museumName==='Mon Musée'){
+    const list=getGalleryList();
+    const g=list.find(x=>x.id===id);
+    if(g&&g.name) S.museumName=g.name;
+  }
   launchGame();
 }
 
