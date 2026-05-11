@@ -176,8 +176,24 @@ body.moving #cursor::before{content:‘👣’}
 .divider{height:1px;background:rgba(201,168,76,.15);margin:16px 0}
 .section-label{font-family:‘Playfair Display’,serif;color:#F0D080;font-size:15px;margin-bottom:10px;font-weight:600}
 .empty-state{color:#D4B070;font-size:13px;font-style:italic;text-align:center;padding:32px 0}
-</style>
 
+/* ─── GALLERY PICKER ─── */
+#gallery-picker{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 40% 40%,#1C0E06 0%,#070301 100%);overflow:hidden}
+.gp-wrap{background:#120804;border:1px solid #C9A84C;padding:28px 22px;max-width:400px;width:94%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.gp-title{font-family:‘Playfair Display’,serif;font-size:22px;color:#F0D080;text-align:center;margin-bottom:6px}
+.gp-sub{color:#C8A870;font-size:13px;text-align:center;margin-bottom:20px;line-height:1.6}
+#gp-grid{display:flex;flex-direction:column;gap:10px}
+.gp-new{border:2px dashed rgba(201,168,76,.35);padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:rgba(201,168,76,.6);font-size:13px;transition:all .2s}
+.gp-new:hover{border-color:#C9A84C;color:#F0D080;background:rgba(201,168,76,.06)}
+.gp-plus{font-size:28px}
+.gp-card{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.25);padding:14px 16px}
+.gp-card-name{color:#F0E4CC;font-size:15px;font-weight:600;margin-bottom:4px;font-family:‘Playfair Display’,serif}
+.gp-card-info{color:#C8A870;font-size:11px;margin-bottom:10px}
+.gp-card-actions{display:flex;gap:8px}
+.gp-open{flex:1;padding:10px;background:linear-gradient(135deg,#8B6520,#F0D080,#8B6520);color:#0D0500;border:none;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.5px}
+.gp-del{padding:10px 14px;background:transparent;border:1px solid rgba(180,60,60,.4);color:#D07070;font-size:14px;cursor:pointer}
+
+</style>
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -450,17 +466,56 @@ body.moving #cursor::before{content:‘👣’}
 // ════════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════════
-const SK = 'musee_v4';
+// ── Galerie active (roomId choisi à l'écran de sélection) ──
+let activeGalleryId = null;
 let S = { artworks:[], museumName:'Mon Musée' };
-
 let ME = { id:'', name:'Maman', emoji:'🎨', role:'artist' };
 let pendingImg = null, detailId = null, pickerFrameIdx = null;
 
-function save(){ try{ localStorage.setItem(SK, JSON.stringify(S)); }catch(e){} }
-function load(){
+// ── Gestion multi-galeries ──
+function galKey(id){ return 'musee_gal_' + id; }
+
+function save(){
+  if(!activeGalleryId) return;
+  try{ localStorage.setItem(galKey(activeGalleryId), JSON.stringify(S)); }catch(e){}
+  // Mettre à jour la liste des galeries
+  const list = getGalleryList();
+  const existing = list.find(g => g.id === activeGalleryId);
+  if(existing){ existing.name = S.museumName; existing.count = S.artworks.length; }
+  else { list.push({ id:activeGalleryId, name:S.museumName, count:S.artworks.length, created:new Date().toLocaleDateString('fr-FR') }); }
+  localStorage.setItem('musee_gallery_list', JSON.stringify(list));
+}
+
+function loadGallery(id){
+  activeGalleryId = id;
   try{
-    const d=localStorage.getItem(SK);
+    const d = localStorage.getItem(galKey(id));
     if(d){ const p=JSON.parse(d); S.artworks=p.artworks||[]; S.museumName=p.museumName||'Mon Musée'; }
+    else { S = { artworks:[], museumName:'Mon Musée' }; }
+  }catch(e){ S = { artworks:[], museumName:'Mon Musée' }; }
+}
+
+function getGalleryList(){
+  try{ return JSON.parse(localStorage.getItem('musee_gallery_list') || '[]'); }catch(e){ return []; }
+}
+
+// Migration : récupérer ancienne galerie unique (musee_v4) si elle existe
+function migrateOldGallery(){
+  const old = localStorage.getItem('musee_v4');
+  const oldRoomId = localStorage.getItem('musee_room_id');
+  if(!old) return;
+  try{
+    const p = JSON.parse(old);
+    if(!p.artworks || p.artworks.length === 0) return;
+    const migId = oldRoomId || ('migrated_' + Date.now());
+    if(!localStorage.getItem(galKey(migId))){
+      localStorage.setItem(galKey(migId), old);
+      const list = getGalleryList();
+      if(!list.find(g => g.id === migId)){
+        list.push({ id:migId, name:p.museumName||'Ma Galerie', count:p.artworks.length, created:'Récupérée' });
+        localStorage.setItem('musee_gallery_list', JSON.stringify(list));
+      }
+    }
   }catch(e){}
 }
 
@@ -525,9 +580,16 @@ function enterMuseum(){
   const museum=document.getElementById('inp-museum').value.trim()||'Mon Musée';
   ME.name=name; ME.emoji=selEmoji; ME.role=selRole;
   ME.id=selRole+'_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
-  if(selRole==='artist'){ S.museumName=museum; save(); }
   document.getElementById('onboarding').style.display='none';
-  launchGame();
+
+  if(selRole==='artist'){
+    // Stocker le nom voulu pour la nouvelle galerie dans S temporairement
+    S.museumName = museum;
+    showGalleryPicker();
+  } else {
+    // Visiteur : chargement depuis Firebase via URL, pas besoin de galerie locale
+    launchGame();
+  }
 }
 
 // ════════════════════════════════════════════════════════
@@ -1666,44 +1728,10 @@ function spawnParticles(x,y,chars,n){
 //  FIREBASE REALTIME DATABASE — vrai multijoueur cross-appareils
 //  Base de données gratuite Firebase de maman (projet dédié)
 // ════════════════════════════════════════════════════════
-// ── Configuration Firebase ──
-// Maman configure son URL Firebase une seule fois (gratuit)
-let FB_URL = localStorage.getItem('musee_fb_url') || '';
+// ── Firebase URL hardcodée — aucune configuration requise ──
+const FB_URL = 'https://maman-e8380-default-rtdb.firebaseio.com';
 
-function getFbUrl() { return FB_URL; }
-
-async function fbReady() {
-  // If no URL configured, show setup screen
-  if (!FB_URL) {
-    return new Promise(resolve => { fbSetupResolve = resolve; showFbSetup(); });
-  }
-  return true;
-}
-let fbSetupResolve = null;
-
-function showFbSetup() {
-  document.getElementById('fb-setup').style.display = 'flex';
-}
-
-function saveFbUrl() {
-  const url = document.getElementById('fb-url-inp').value.trim().replace(/\/+$/, '');
-  if (!url || !url.includes('firebasedatabase') && !url.includes('firebaseio')) {
-    document.getElementById('fb-err').textContent = '⚠️ URL invalide. Elle doit contenir "firebasedatabase" ou "firebaseio"';
-    return;
-  }
-  FB_URL = url;
-  localStorage.setItem('musee_fb_url', FB_URL);
-  document.getElementById('fb-setup').style.display = 'none';
-  if (fbSetupResolve) { fbSetupResolve(true); fbSetupResolve = null; }
-}
-
-function skipFbSetup() {
-  // Mode hors-ligne : pas de partage, mais tout fonctionne en local
-  document.getElementById('fb-setup').style.display = 'none';
-  FB_URL = '';
-  if (fbSetupResolve) { fbSetupResolve(false); fbSetupResolve = null; }
-  notify('Mode hors-ligne : le partage est désactivé');
-}
+async function fbReady() { return true; }
 
 let roomId = null;
 let lastBcast = 0;
@@ -1935,9 +1963,9 @@ async function initMulti() {
       setTimeout(() => notify('🎨 Bienvenue dans la galerie !'), 1200);
     }
   } else {
-    // Artiste : room ID stable
-    const saved = localStorage.getItem('musee_room_id');
-    roomId = saved || ('r_' + Date.now() + '_' + Math.random().toString(36).substr(2,8));
+    // Artiste : roomId = activeGalleryId choisi dans le sélecteur de galeries
+    roomId = activeGalleryId || localStorage.getItem('musee_room_id') || ('r_' + Date.now() + '_' + Math.random().toString(36).substr(2,8));
+    activeGalleryId = roomId;
     localStorage.setItem('musee_room_id', roomId);
     window.history.replaceState({}, '', '?room=' + roomId);
   }
@@ -2013,6 +2041,62 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
 window.addEventListener('resize',resize);
 
 // ════════════════════════════════════════════════════════
+//  SÉLECTION DE GALERIE (artiste uniquement)
+// ════════════════════════════════════════════════════════
+function showGalleryPicker(){
+  const list = getGalleryList();
+  const el = document.getElementById('gallery-picker');
+  const grid = document.getElementById('gp-grid');
+  grid.innerHTML = '';
+
+  // Bouton créer nouvelle galerie
+  const newBtn = document.createElement('div');
+  newBtn.className = 'gp-new';
+  newBtn.innerHTML = '<div class="gp-plus">+</div><div>Nouvelle galerie</div>';
+  newBtn.onclick = () => createNewGallery();
+  grid.appendChild(newBtn);
+
+  // Galeries existantes
+  list.slice().reverse().forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'gp-card';
+    card.innerHTML = `
+      <div class="gp-card-name">${g.name || 'Sans nom'}</div>
+      <div class="gp-card-info">${g.count || 0} tableau(x) · ${g.created||''}</div>
+      <div class="gp-card-actions">
+        <button class="gp-open" onclick="openGallery('${g.id}')">🏛 Ouvrir</button>
+        <button class="gp-del" onclick="deleteGallery('${g.id}',this)">🗑</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  el.style.display = 'flex';
+}
+
+function createNewGallery(){
+  const id = 'gal_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  localStorage.setItem('musee_room_id', id);
+  openGallery(id);
+}
+
+function openGallery(id){
+  document.getElementById('gallery-picker').style.display = 'none';
+  loadGallery(id);
+  localStorage.setItem('musee_room_id', id);
+  activeGalleryId = id;
+  launchGame();
+}
+
+function deleteGallery(id, btn){
+  if(!confirm('Supprimer cette galerie et toutes ses peintures ?')) return;
+  localStorage.removeItem(galKey(id));
+  let list = getGalleryList().filter(g => g.id !== id);
+  localStorage.setItem('musee_gallery_list', JSON.stringify(list));
+  btn.closest('.gp-card').remove();
+  notify('🗑 Galerie supprimée');
+}
+
+// ════════════════════════════════════════════════════════
 //  LAUNCH
 // ════════════════════════════════════════════════════════
 function launchGame(){
@@ -2037,41 +2121,20 @@ function launchGame(){
 }
 
 window.addEventListener('load',()=>{
-  resize();load();initStars();
+  resize(); migrateOldGallery(); initStars();
   const params=new URLSearchParams(window.location.search);
   setTimeout(()=>{
     document.getElementById('loading').style.display='none';
-    document.getElementById('onboarding').style.display='flex';
-    // Pre-select visitor role if URL says so
-    if(params.get('visitor')==='1') selectRole('visitor');
+    if(params.get('visitor')==='1'){
+      // Visiteur avec lien : charger galerie directement, passer onboarding en mode visiteur
+      selectRole('visitor');
+      document.getElementById('onboarding').style.display='flex';
+    } else {
+      document.getElementById('onboarding').style.display='flex';
+    }
   },2500);
 });
 </script>
 
-<!-- FIREBASE SETUP -->
-
-<div id="fb-setup" style="position:fixed;inset:0;z-index:9800;display:none;align-items:center;justify-content:center;background:rgba(5,2,0,0.98);flex-direction:column;gap:0;padding:20px">
-  <div style="background:#120804;border:1px solid #C9A84C;padding:28px 24px;max-width:380px;width:100%;position:relative">
-    <div style="font-family:'Playfair Display',serif;font-size:22px;color:#F0D080;margin-bottom:6px;text-align:center">🌐 Galerie en ligne</div>
-    <div style="color:#D4B880;font-size:13px;line-height:1.7;margin-bottom:18px;text-align:center">Pour que vos amis puissent visiter votre galerie depuis leur téléphone, créez une base de données gratuite Firebase en 3 minutes :</div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
-      <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);padding:11px 14px;color:#F0E4CC;font-size:13px;line-height:1.6;border-radius:0">
-        <b style="color:#F0D080">1.</b> Allez sur <b style="color:#C9A84C">console.firebase.google.com</b><br>
-        <b style="color:#F0D080">2.</b> Créez un projet (gratuit, 2 clics)<br>
-        <b style="color:#F0D080">3.</b> Dans le menu : <b style="color:#C9A84C">Realtime Database → Créer</b><br>
-        <b style="color:#F0D080">4.</b> Choisissez <b style="color:#C9A84C">"Mode test"</b> (partage libre)<br>
-        <b style="color:#F0D080">5.</b> Copiez l'URL (ex: https://mon-musee-rtdb.firebaseio.com)<br>
-        <b style="color:#F0D080">6.</b> Collez-la ci-dessous ↓
-      </div>
-    </div>
-    <input id="fb-url-inp" class="inp" type="url" placeholder="https://votre-projet-rtdb.firebaseio.com" style="font-size:13px;margin-bottom:6px">
-    <div id="fb-err" style="color:#E07070;font-size:11px;min-height:16px;margin-bottom:10px"></div>
-    <button class="btn-primary" onclick="saveFbUrl()" style="margin-bottom:8px">✅ Connecter ma galerie</button>
-    <button class="btn-secondary" onclick="skipFbSetup()">⏭ Ignorer (mode hors-ligne)</button>
-    <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(201,168,76,0.2);color:#9A7850;font-size:11px;text-align:center;line-height:1.6">
-      💡 Firebase Spark (gratuit) = 1 Go de stockage · 10 Go/mois de transfert<br>Aucune carte bancaire requise
-    </div>
-  </div>
-</div>
 </body>
 </html>
