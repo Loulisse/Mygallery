@@ -1643,9 +1643,9 @@ function getCroppedDataUrl(){
   const out = document.createElement('canvas');
   out.width  = sw; out.height = sh;
   const oc = out.getContext('2d');
-  const src = new Image();
-  src.src = cropImg;
-  oc.drawImage(src, sx, sy, sw, sh, 0, 0, sw, sh);
+  // Utiliser l'<img> déjà chargé dans le DOM (évite le problème async)
+  const imgEl2 = document.getElementById('crop-img');
+  oc.drawImage(imgEl2, sx, sy, sw, sh, 0, 0, sw, sh);
   return out.toDataURL('image/jpeg', 0.88);
 }
 
@@ -1673,7 +1673,7 @@ function confirmArt() {
   const desc  = document.getElementById('ap-desc').value.trim();
   const id = 'art_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
   // Use cropped version
-  const finalDataUrl = cropState.img ? getCroppedDataUrl() : pendingImg;
+  const finalDataUrl = cropImg ? getCroppedDataUrl() : pendingImg;
   S.artworks.push({id, title, desc, dataUrl: finalDataUrl, placed:false, frameIdx:null, addedAt: new Date().toLocaleDateString('fr-FR')});
   save(); pendingImg = null;
   document.getElementById('art-popup').style.display = 'none';
