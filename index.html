@@ -196,6 +196,24 @@ body.moving #cursor::before{content:‘👣’}
 .gp-open{flex:1;padding:10px;background:linear-gradient(135deg,#8B6520,#F0D080,#8B6520);color:#0D0500;border:none;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.5px}
 .gp-del{padding:10px 14px;background:transparent;border:1px solid rgba(180,60,60,.4);color:#D07070;font-size:14px;cursor:pointer}
 
+/* ─── ENCHÈRES ─── */
+.bid-badge{position:absolute;top:6px;left:6px;background:rgba(6,3,1,.9);border:1px solid var(–gold);color:var(–gold-l);font-size:10px;padding:3px 7px;font-family:‘Quicksand’,sans-serif;font-weight:600}
+#bid-panel{position:fixed;inset:0;z-index:650;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5)}
+.bid-sheet{background:#0D0805;border-top:2px solid var(–gold);padding:24px 20px 32px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.bid-title{font-family:‘Playfair Display’,serif;font-size:20px;color:var(–gold-l);margin-bottom:4px}
+.bid-sub{color:#9A7850;font-size:12px;margin-bottom:16px;font-style:italic}
+.bid-current{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);padding:14px;margin-bottom:14px;text-align:center}
+.bid-amount{font-family:‘Playfair Display’,serif;font-size:28px;color:var(–gold-l)}
+.bid-leader{color:#C8A870;font-size:12px;margin-top:4px}
+.bid-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-height:150px;overflow-y:auto}
+.bid-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1)}
+.bid-item.top{border-color:var(–gold);background:rgba(201,168,76,.12)}
+.bid-input-row{display:flex;gap:8px;margin-bottom:8px}
+.bid-presets{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.bid-preset{padding:8px 12px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);color:var(–gold);font-size:12px;cursor:pointer;transition:all .2s}
+.bid-preset:hover{background:rgba(201,168,76,.18);border-color:var(–gold)}
+
 </style>
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -281,22 +299,38 @@ body.moving #cursor::before{content:‘👣’}
 
 <!-- STEP 2 : Prénom -->
 <div class="ob-step" id="step-name">
-  <div class="ob-icon" id="step-name-icon">✍️</div>
-  <div class="ob-title" id="step-name-title">Quel est votre prénom ?</div>
-  <div class="ob-body" id="step-name-body">Ce nom apparaîtra au-dessus de votre personnage dans la galerie.</div>
+  <div class="ob-icon">✍️</div>
+  <div class="ob-title">Votre prénom</div>
+  <div class="ob-body">Ce nom apparaîtra au-dessus de votre personnage dans la galerie.</div>
   <input class="ob-input" id="inp-name" type="text" placeholder="Votre prénom…" maxlength="18" autocomplete="off">
-  <div id="museum-name-wrap" style="display:none">
-    <div style="color:#D4A84C;font-size:12px;margin-bottom:6px;letter-spacing:.5px">Nom de votre musée :</div>
-    <input class="ob-input" id="inp-museum" type="text" placeholder="Ex : La Galerie des Rêves…" maxlength="30" autocomplete="off">
-  </div>
   <button class="btn-primary" onclick="nextStep()">Continuer →</button>
   <button class="btn-secondary" onclick="prevStep()">← Retour</button>
 </div>
 
-<!-- STEP 3 : Avatar emoji -->
+<!-- STEP 3 : Galeries (artiste) / direct (visiteur) -->
+<div class="ob-step" id="step-gallery">
+  <div class="ob-icon">🖼</div>
+  <div class="ob-title" id="step-gallery-title">Vos galeries</div>
+  <div class="ob-body" id="step-gallery-body">Choisissez une galerie existante ou créez-en une nouvelle.</div>
+  <div id="ob-gallery-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;max-height:200px;overflow-y:auto"></div>
+  <button class="btn-primary" id="ob-new-gallery-btn" onclick="obCreateNewGallery()" style="margin-top:8px">+ Nouvelle galerie</button>
+  <button class="btn-secondary" onclick="prevStep()">← Retour</button>
+</div>
+
+<!-- STEP 4 : Nom de la nouvelle galerie (artiste uniquement) -->
+<div class="ob-step" id="step-museum-name">
+  <div class="ob-icon">🏷</div>
+  <div class="ob-title">Nommez votre galerie</div>
+  <div class="ob-body">Donnez un beau nom à votre musée virtuel !</div>
+  <input class="ob-input" id="inp-museum" type="text" placeholder="Ex : La Galerie des Rêves…" maxlength="30" autocomplete="off">
+  <button class="btn-primary" onclick="nextStep()">Continuer →</button>
+  <button class="btn-secondary" onclick="prevStep()">← Retour</button>
+</div>
+
+<!-- STEP 5 : Avatar emoji -->
 <div class="ob-step" id="step-emoji">
   <div class="ob-icon">🪄</div>
-  <div class="ob-title">Choisissez votre avatar</div>
+  <div class="ob-title">Votre avatar</div>
   <div class="ob-body">Votre petit personnage vous représentera dans la galerie !</div>
   <div class="emoji-grid" id="emoji-grid"></div>
   <button class="btn-primary" onclick="enterMuseum()">✨ Entrer dans la galerie</button>
@@ -304,7 +338,7 @@ body.moving #cursor::before{content:‘👣’}
 </div>
 
 <div class="ob-dots" id="ob-dots">
-  <div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+  <div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
 </div>
 ```
 
@@ -375,6 +409,13 @@ body.moving #cursor::before{content:‘👣’}
     <div class="divider"></div>
     <div class="section-label">Visiteurs en ligne</div>
     <div class="vlist" id="vlist"><div class="empty-state">Personne encore… Partagez le lien ! ✨</div></div>
+    <div style="margin-top:16px">
+      <div class="section-label" style="display:flex;align-items:center;justify-content:space-between">
+        Historique des visites
+        <button onclick="renderVisitorHistory()" style="background:none;border:1px solid rgba(201,168,76,.3);color:#C9A84C;padding:4px 10px;font-size:11px;cursor:pointer">↻ Actualiser</button>
+      </div>
+      <div id="visitor-history" class="vlist" style="margin-top:8px"><div class="empty-state">Aucun visiteur pour l\'instant…</div></div>
+    </div>
   </div>
 </div>
 
@@ -419,10 +460,20 @@ body.moving #cursor::before{content:‘👣’}
   <div class="ph"><div class="ph-title" id="ad-title">Tableau</div><button class="ph-close" onclick="closeDetail()">✕</button></div>
   <div class="ad-img"><img id="ad-img" src="" alt=""></div>
   <div style="padding:0 18px 6px;color:#D4B880;font-size:14px;font-style:italic;font-family:'Cormorant Garamond',serif" id="ad-desc"></div>
+  <!-- Commentaires -->
+  <div style="padding:0 18px 8px;flex-shrink:0">
+    <div style="color:#F0D080;font-family:'Playfair Display',serif;font-size:13px;margin-bottom:8px">💬 Commentaires</div>
+    <div id="comments-list" style="max-height:120px;overflow-y:auto;margin-bottom:8px;-webkit-overflow-scrolling:touch"></div>
+    <div style="display:flex;gap:6px">
+      <input id="comment-input" class="inp" style="flex:1;padding:9px 10px;font-size:13px;margin-bottom:0" placeholder="Laisser un commentaire…" maxlength="120">
+      <button onclick="submitComment()" style="padding:9px 14px;background:var(--gold);color:#0D0500;border:none;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0">→</button>
+    </div>
+  </div>
   <div class="ad-foot">
     <button class="btn-secondary" id="ad-place" onclick="placeFromDetail()" style="font-size:11px">🏛 Placer</button>
     <button class="btn-secondary" id="ad-remove" onclick="removeFromFrame()" style="font-size:11px;display:none">📤 Décrocher</button>
     <button class="btn-secondary" onclick="deleteFromDetail()" style="border-color:rgba(180,60,60,.4);color:#D07070;font-size:11px">🗑 Supprimer</button>
+    <button class="btn-secondary" onclick="openBid(detailId)" style="font-size:11px;border-color:rgba(255,200,50,.4);color:#F0D080">🔨 Enchères</button>
     <button class="btn-secondary" onclick="closeDetail()" style="font-size:11px">✕</button>
   </div>
 </div>
@@ -490,68 +541,115 @@ body.moving #cursor::before{content:‘👣’}
 
 <script>
 // ════════════════════════════════════════════════════════
-//  STATE
+//  STATE - tout sur Firebase, rien en localStorage
 // ════════════════════════════════════════════════════════
-// ── Galerie active (roomId choisi à l'écran de sélection) ──
 let activeGalleryId = null;
 let S = { artworks:[], museumName:'Mon Musée' };
 let ME = { id:'', name:'Maman', emoji:'🎨', role:'artist' };
 let pendingImg = null, detailId = null, pickerFrameIdx = null;
 
-// ── Gestion multi-galeries ──
-function galKey(id){ return 'musee_gal_' + id; }
+// ── ID visiteur persistant (seul truc en localStorage, léger) ──
+function getMyVisitorId(){
+  let vid = localStorage.getItem('musee_visitor_id');
+  if(!vid){ vid = 'v_'+Date.now()+'_'+Math.random().toString(36).substr(2,6); localStorage.setItem('musee_visitor_id',vid); }
+  return vid;
+}
+function getMyVisitorProfile(){
+  try{ return JSON.parse(localStorage.getItem('musee_visitor_profile')||'null'); }catch(e){ return null; }
+}
+function saveMyVisitorProfile(profile){
+  localStorage.setItem('musee_visitor_profile', JSON.stringify(profile));
+}
 
-function save(){
+// ── save : publie sur Firebase ──
+async function save(){
   if(!activeGalleryId) return;
-  try{ localStorage.setItem(galKey(activeGalleryId), JSON.stringify(S)); }catch(e){}
-  // Mettre à jour la liste des galeries
-  const list = getGalleryList();
-  const existing = list.find(g => g.id === activeGalleryId);
-  if(existing){ existing.name = S.museumName; existing.count = S.artworks.length; }
-  else { list.push({ id:activeGalleryId, name:S.museumName, count:S.artworks.length, created:new Date().toLocaleDateString('fr-FR') }); }
-  localStorage.setItem('musee_gallery_list', JSON.stringify(list));
+  // Metadonnées galerie (sans images)
+  const meta = S.artworks.map(a=>({
+    id:a.id, title:a.title, desc:a.desc||'',
+    placed:a.placed, frameIdx:a.frameIdx, addedAt:a.addedAt||''
+  }));
+  await fbSet('/galleries/'+activeGalleryId+'/info', {
+    museumName: S.museumName,
+    updatedAt: Date.now()
+  });
+  await fbSet('/galleries/'+activeGalleryId+'/artworks_meta', meta.length ? meta : []);
+  // Enregistrer les images des tableaux
+  for(const a of S.artworks){
+    if(a.dataUrl) await fbSet('/galleries/'+activeGalleryId+'/artwork_data/'+a.id, {dataUrl:a.dataUrl});
+  }
+  // Mettre à jour l'index des galeries
+  await fbPatch('/gallery_index/'+activeGalleryId, {
+    id:activeGalleryId, name:S.museumName,
+    count:S.artworks.length, updatedAt:Date.now()
+  });
 }
 
-function loadGallery(id){
+// ── Charger une galerie depuis Firebase ──
+async function loadGallery(id){
   activeGalleryId = id;
-  try{
-    const d = localStorage.getItem(galKey(id));
-    if(d){ const p=JSON.parse(d); S.artworks=p.artworks||[]; S.museumName=p.museumName||'Mon Musée'; }
-    else { S = { artworks:[], museumName:'Mon Musée' }; }
-  }catch(e){ S = { artworks:[], museumName:'Mon Musée' }; }
+  S = { artworks:[], museumName:'Mon Musée' };
+  const info = await fbGet('/galleries/'+id+'/info');
+  if(info){ S.museumName = info.museumName || 'Mon Musée'; }
+  const meta = await fbGet('/galleries/'+id+'/artworks_meta');
+  if(meta && Array.isArray(meta)){
+    S.artworks = meta;
+    // Charger les images en arrière-plan
+    S.artworks.forEach(a => loadArtworkImage(id, a.id));
+  }
 }
 
-function getGalleryList(){
-  try{ return JSON.parse(localStorage.getItem('musee_gallery_list') || '[]'); }catch(e){ return []; }
+async function loadArtworkImage(galleryId, artId){
+  const d = await fbGet('/galleries/'+galleryId+'/artwork_data/'+artId);
+  if(d && d.dataUrl){
+    const art = S.artworks.find(a=>a.id===artId);
+    if(art){ art.dataUrl=d.dataUrl; delete IMG_CACHE[artId]; }
+  }
 }
 
-// Migration : récupérer ancienne galerie unique (musee_v4) si elle existe
-function migrateOldGallery(){
+// ── Liste des galeries depuis Firebase ──
+async function getGalleryList(){
+  const idx = await fbGet('/gallery_index');
+  if(!idx || typeof idx!=='object') return [];
+  return Object.values(idx).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+}
+
+// ── Migration localStorage → Firebase (une seule fois) ──
+async function migrateOldGallery(){
   const old = localStorage.getItem('musee_v4');
   const oldRoomId = localStorage.getItem('musee_room_id');
   if(!old) return;
   try{
     const p = JSON.parse(old);
-    if(!p.artworks || p.artworks.length === 0) return;
-    const migId = oldRoomId || ('migrated_' + Date.now());
-    if(!localStorage.getItem(galKey(migId))){
-      localStorage.setItem(galKey(migId), old);
-      const list = getGalleryList();
-      if(!list.find(g => g.id === migId)){
-        list.push({ id:migId, name:p.museumName||'Ma Galerie', count:p.artworks.length, created:'Récupérée' });
-        localStorage.setItem('musee_gallery_list', JSON.stringify(list));
-      }
-    }
+    if(!p.artworks||p.artworks.length===0) return;
+    const migId = oldRoomId || ('migrated_'+Date.now());
+    // Vérifier si déjà migré
+    const existing = await fbGet('/gallery_index/'+migId);
+    if(existing) return;
+    // Migrer vers Firebase
+    S = { artworks: p.artworks, museumName: p.museumName||'Ma Galerie' };
+    activeGalleryId = migId;
+    await save();
+    localStorage.removeItem('musee_v4');
+    notify('✨ Vos anciennes peintures ont été récupérées !');
   }catch(e){}
 }
 
 // ════════════════════════════════════════════════════════
-//  ONBOARDING
+//  ONBOARDING - 6 étapes
+//  1-Rôle  2-Prénom  3-Galeries  4-NomGalerie  5-Avatar  6→enterMuseum
 // ════════════════════════════════════════════════════════
-let obStep=0;
-const STEPS=['step-role','step-name','step-emoji'];
 const EMOJIS=['🎨','🌸','🦋','⭐','🌺','🌻','🍀','🌙','🦄','🐝','🎭','🎪','🌈','🦚','🌷','🎀','🌊','🔮','🍁','🎵','🎠','🏵'];
 let selEmoji='🎨', selRole='artist';
+let obStep=0;
+let obNewGallery=false;
+let obSelectedGalleryId=null;
+
+function getSteps(){
+  if(selRole==='visitor')  return ['step-role','step-name','step-emoji'];
+  if(obNewGallery)         return ['step-role','step-name','step-gallery','step-museum-name','step-emoji'];
+  return                          ['step-role','step-name','step-gallery','step-emoji'];
+}
 
 function initStars(){
   const c=document.getElementById('starfield');
@@ -576,44 +674,96 @@ function selectRole(r){
   selRole=r;
   document.getElementById('role-artist').classList.toggle('sel',r==='artist');
   document.getElementById('role-visitor').classList.toggle('sel',r==='visitor');
+  selEmoji=r==='artist'?'🎨':'🌸';
+}
+
+async function loadObGalleryList(){
+  const list=document.getElementById('ob-gallery-list');
+  list.innerHTML='<div style="color:#9A7850;font-size:12px;text-align:center">⏳ Chargement…</div>';
+  const galleries=await getGalleryList();
+  list.innerHTML='';
+  if(!galleries.length){
+    list.innerHTML='<div style="color:#C8A870;font-size:13px;text-align:center;padding:8px 0">Aucune galerie - créez-en une !</div>';
+    return;
+  }
+  galleries.forEach(g=>{
+    const card=document.createElement('div');
+    card.style.cssText='background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);padding:12px 14px;cursor:pointer;transition:all .2s;margin-bottom:4px';
+    card.innerHTML=`<div style="color:#F0E4CC;font-size:14px;font-weight:600">${g.name||'Sans nom'}</div><div style="color:#C8A870;font-size:11px;margin-top:2px">${g.count||0} tableau(x) · ${g.updatedAt?timeAgo(g.updatedAt):''}</div>`;
+    card.onclick=()=>{
+      obSelectedGalleryId=g.id; obNewGallery=false;
+      list.querySelectorAll('[data-sel]').forEach(x=>{ x.style.border='1px solid rgba(201,168,76,.25)'; x.removeAttribute('data-sel'); });
+      card.style.border='2px solid #C9A84C'; card.setAttribute('data-sel','1');
+      obStep=getSteps().indexOf('step-gallery');
+      nextStep();
+    };
+    list.appendChild(card);
+  });
+}
+
+function obCreateNewGallery(){
+  obNewGallery=true; obSelectedGalleryId=null;
+  obStep=getSteps().indexOf('step-gallery');
+  obStep++; // forcer l'avance vers step-museum-name
+  showStep();
 }
 
 function nextStep(){
-  if(obStep===1){
+  const steps=getSteps();
+  const cur=steps[obStep];
+  if(cur==='step-name'){
     const n=document.getElementById('inp-name').value.trim();
-    if(!n){ document.getElementById('inp-name').focus(); notify('Entrez votre prénom 😊'); return; }
+    if(!n){ document.getElementById('inp-name').focus(); notify("Entrez votre prénom 😊"); return; }
   }
-  obStep=Math.min(2,obStep+1);
+  if(cur==='step-museum-name'){
+    const m=document.getElementById('inp-museum').value.trim();
+    if(!m){ document.getElementById('inp-museum').focus(); notify("Donnez un nom à votre galerie 🎨"); return; }
+  }
+  obStep=Math.min(steps.length-1, obStep+1);
   showStep();
 }
+
 function prevStep(){ obStep=Math.max(0,obStep-1); showStep(); }
+
 function showStep(){
-  STEPS.forEach((id,i)=>{ document.getElementById(id).classList.toggle('active',i===obStep); });
+  const steps=getSteps();
+  ['step-role','step-name','step-gallery','step-museum-name','step-emoji'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('active');
+  });
+  const cur=steps[obStep];
+  const el=document.getElementById(cur); if(el) el.classList.add('active');
   document.querySelectorAll('.ob-dot').forEach((d,i)=>d.classList.toggle('on',i===obStep));
-  if(obStep===1){
-    const isArtist=selRole==='artist';
-    document.getElementById('step-name-icon').textContent=isArtist?'👩‍🎨':'🌸';
-    document.getElementById('step-name-title').textContent=isArtist?'Quel est votre prénom ?':'Comment vous appelez-vous ?';
-    document.getElementById('step-name-body').textContent=isArtist?'Votre nom apparaîtra sur votre personnage dans la galerie.':'Votre prénom sera visible par l\'artiste et les autres visiteurs.';
-    document.getElementById('museum-name-wrap').style.display=isArtist?'block':'none';
-    selEmoji=isArtist?'🎨':'🌸';
-  }
-  if(obStep===2) initEmojiGrid();
+  if(cur==='step-gallery' && selRole==='artist') loadObGalleryList();
+  if(cur==='step-emoji') initEmojiGrid();
 }
 
 function enterMuseum(){
-  const name=document.getElementById('inp-name').value.trim()||'Maman';
-  const museum=document.getElementById('inp-museum').value.trim()||'Mon Musée';
-  ME.name=name; ME.emoji=selEmoji; ME.role=selRole;
-  ME.id=selRole+'_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
+  const name=document.getElementById('inp-name').value.trim()||'Visiteur';
+  const museumInp=document.getElementById('inp-museum');
+  const museum=(museumInp?museumInp.value.trim():'')||'Mon Musée';
+
   document.getElementById('onboarding').style.display='none';
 
   if(selRole==='artist'){
-    // Stocker le nom voulu pour la nouvelle galerie dans S temporairement
-    S.museumName = museum;
-    showGalleryPicker();
+    const artistKey='artist_'+name.toLowerCase().replace(/[^a-z0-9]/g,'')+'_'+btoa(name).replace(/[^a-zA-Z0-9]/g,'').substr(0,8);
+    ME={id:artistKey,name,emoji:selEmoji,role:'artist'};
+    saveMyVisitorProfile({id:artistKey,name,emoji:selEmoji,role:'artist'});
+    if(obNewGallery||!obSelectedGalleryId){
+      // Nouvelle galerie : on crée un ID et on ouvre
+      const newId='gal_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
+      S.museumName=museum;
+      activeGalleryId=newId;
+      openGallery(newId);
+    } else {
+      // Galerie existante choisie à l'étape 3
+      openGallery(obSelectedGalleryId);
+    }
   } else {
-    // Visiteur : chargement depuis Firebase via URL, pas besoin de galerie locale
+    const existingProfile=getMyVisitorProfile();
+    if(existingProfile){ ME={...existingProfile,role:'visitor'}; }
+    else { ME={id:getMyVisitorId(),name,emoji:selEmoji,role:'visitor'}; }
+    ME.name=name; ME.emoji=selEmoji;
+    saveMyVisitorProfile({id:ME.id,name,emoji:ME.emoji,role:'visitor'});
     launchGame();
   }
 }
@@ -642,7 +792,7 @@ const WALL_RECTS=[
   {x:0,   y:WH-72,w:WW, h:72},       // S
   {x:0,   y:0,    w:72, h:WH},       // W
   {x:WW-72,y:0,   w:72, h:WH},       // E
-  // Piliers intérieurs — alignés sur drawPillar(x,490)
+  // Piliers intérieurs - alignés sur drawPillar(x,490)
   // drawPillar dessine à x±15 (largeur 30), de y-180 à y
   // On bloque juste le pied (zone de passage) : x±16, y-30 à y+10
   {x:408-16,y:460,w:32,h:40},
@@ -662,7 +812,7 @@ const WALL_RECTS=[
 ];
 
 // ─ FRAMES ─
-// Format: {x,y,w,h,wall} — placed carefully on walls
+// Format: {x,y,w,h,wall} - placed carefully on walls
 const FRAMES=[];
 (function(){
   // North wall frames (y≈75, various x)
@@ -795,7 +945,7 @@ function drawFloor(){
 }
 
 // ════════════════════════════════════════════════════════
-//  WALLS  — top-down with perspective "thickness"
+//  WALLS  - top-down with perspective "thickness"
 // ════════════════════════════════════════════════════════
 function drawWalls(){
   // ── North wall (top): drawn as a horizontal band with a lit top face
@@ -846,7 +996,7 @@ function drawWalls(){
 }
 
 // ════════════════════════════════════════════════════════
-//  CHANDELIER  — ceiling fixture
+//  CHANDELIER  - ceiling fixture
 // ════════════════════════════════════════════════════════
 function drawChandelier(x,y){
   // Warm cone of light on floor
@@ -872,13 +1022,13 @@ function drawChandelier(x,y){
 }
 
 // ════════════════════════════════════════════════════════
-//  PLANT  — top-down pot + leaves fanning outward
+//  PLANT  - top-down pot + leaves fanning outward
 // ════════════════════════════════════════════════════════
 function drawPlant(x,y,leafIdx){
   const ld=PLANT_LEAF_DATA[leafIdx%PLANT_LEAF_DATA.length];
   // Shadow oval
   ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.ellipse(x,y+6,18,7,0,0,Math.PI*2);ctx.fill();
-  // Pot — top-down: just a small circle with perspective ellipse
+  // Pot - top-down: just a small circle with perspective ellipse
   ctx.fillStyle='#6B3010';ctx.beginPath();ctx.ellipse(x,y+2,12,6,0,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='#8B4018';ctx.beginPath();ctx.ellipse(x,y-1,12,6,0,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle='#3A1808';ctx.lineWidth=1;ctx.stroke();
@@ -895,7 +1045,7 @@ function drawPlant(x,y,leafIdx){
 }
 
 // ════════════════════════════════════════════════════════
-//  BENCH  — top-down view (seen from above)
+//  BENCH  - top-down view (seen from above)
 // ════════════════════════════════════════════════════════
 function drawBench(x,y){
   // Shadow
@@ -916,23 +1066,23 @@ function drawBench(x,y){
 }
 
 // ════════════════════════════════════════════════════════
-//  PILLAR  — proper top-down perspective column
+//  PILLAR  - proper top-down perspective column
 // ════════════════════════════════════════════════════════
 function drawPillar(x,y){
   const W=28,H=130; // width, visual height upward
   // Shadow on floor
   ctx.fillStyle='rgba(0,0,0,0.35)';ctx.beginPath();ctx.ellipse(x+5,y+8,W/2+4,10,0,0,Math.PI*2);ctx.fill();
-  // Base moulding — bottom (front face visible)
+  // Base moulding - bottom (front face visible)
   ctx.fillStyle='#8B7040';ctx.fillRect(x-W/2-4,y+4,W+8,10);
   ctx.fillStyle='#C9A84C';ctx.fillRect(x-W/2-4,y+4,W+8,3);
-  // Shaft — main column with gradient (left=shadow, right=highlight)
+  // Shaft - main column with gradient (left=shadow, right=highlight)
   const sg=ctx.createLinearGradient(x-W/2,0,x+W/2,0);
   sg.addColorStop(0,'#4A2E10');sg.addColorStop(0.25,'#B8906A');sg.addColorStop(0.55,'#D4B08A');sg.addColorStop(0.8,'#BCA070');sg.addColorStop(1,'#4A2E10');
   ctx.fillStyle=sg;ctx.fillRect(x-W/2,y-H,W,H+4);
   // Fluting lines on shaft
   ctx.strokeStyle='rgba(50,25,5,0.3)';ctx.lineWidth=1;
   for(let i=-10;i<=10;i+=6){ ctx.beginPath();ctx.moveTo(x+i,y-H);ctx.lineTo(x+i,y+4);ctx.stroke(); }
-  // Capital — top face (horizontal, seen from above = ellipse)
+  // Capital - top face (horizontal, seen from above = ellipse)
   const cg=ctx.createLinearGradient(x-W/2-6,0,x+W/2+6,0);
   cg.addColorStop(0,'#8A6820');cg.addColorStop(0.4,'#F0D080');cg.addColorStop(0.7,'#C9A84C');cg.addColorStop(1,'#8A6820');
   ctx.fillStyle=cg;ctx.fillRect(x-W/2-6,y-H-10,W+12,14);
@@ -942,7 +1092,7 @@ function drawPillar(x,y){
 }
 
 // ════════════════════════════════════════════════════════
-//  STATUE  — top-down perspective pedestal + figure
+//  STATUE  - top-down perspective pedestal + figure
 // ════════════════════════════════════════════════════════
 function drawStatue(x,y){
   const PW=40,PH=55;
@@ -957,7 +1107,7 @@ function drawStatue(x,y){
   ctx.strokeStyle='#8A7860';ctx.lineWidth=1;ctx.stroke();
   // Pedestal base
   ctx.fillStyle='#8A7860';ctx.fillRect(x-PW/2-3,y-4,PW+6,8);
-  // Figure — simple elegant silhouette (top-down means we see it head-on)
+  // Figure - simple elegant silhouette (top-down means we see it head-on)
   ctx.fillStyle='#D8C8B0';
   // Robe (wide at bottom, narrow top)
   ctx.beginPath();ctx.moveTo(x-14,y-PH);ctx.lineTo(x+14,y-PH);ctx.lineTo(x+9,y-PH-52);ctx.lineTo(x-9,y-PH-52);ctx.closePath();ctx.fill();
@@ -1042,7 +1192,7 @@ function drawFrames(){
 }
 
 // ════════════════════════════════════════════════════════
-//  CHARACTER SPRITE  — 4-directional, no rotation
+//  CHARACTER SPRITE  - 4-directional, no rotation
 // ════════════════════════════════════════════════════════
 function drawCharSprite(x,y,dir,isPlayer,cfg){
   // dir: 0=down(face) 1=left 2=right 3=up(back)
@@ -1170,7 +1320,7 @@ function drawCharSprite(x,y,dir,isPlayer,cfg){
 }
 
 // ════════════════════════════════════════════════════════
-//  DRAW PLAYER  — wraps drawCharSprite
+//  DRAW PLAYER  - wraps drawCharSprite
 // ════════════════════════════════════════════════════════
 function drawPlayer(){
   // Compute direction from movement angle
@@ -1352,7 +1502,7 @@ function loop(ts){
     tip.style.display='block';
     tip.style.left=(canvas.width/2-110)+'px';
     tip.style.top=(canvas.height/2-140)+'px';
-    tip.textContent=art?'"'+(art.title||'Sans titre')+'" — Cliquez pour voir':'Cliquez pour accrocher un tableau ici';
+    tip.textContent=art?'"'+(art.title||'Sans titre')+'" - Cliquez pour voir':'Cliquez pour accrocher un tableau ici';
   } else { document.getElementById('tip').style.display='none'; }
 
   broadcast();
@@ -1459,9 +1609,18 @@ function openDetail(artId){
   const canRemove=ME.role==='artist'&&art.placed;
   document.getElementById('ad-place').style.display=canPlace?'block':'none';
   document.getElementById('ad-remove').style.display=canRemove?'block':'none';
+  document.getElementById('comments-list').innerHTML='<div style="color:#9A7850;font-size:12px">⏳ Chargement…</div>';
+  document.getElementById('comment-input').value='';
   document.getElementById('art-detail').style.display='flex';
+  if(roomId) renderComments(artId);
 }
 function closeDetail(){document.getElementById('art-detail').style.display='none';detailId=null;}
+function submitComment(){
+  const inp=document.getElementById('comment-input');
+  const txt=inp.value.trim(); if(!txt||!detailId) return;
+  inp.value='';
+  addComment(detailId,txt);
+}
 function placeFromDetail(){
   if(!detailId)return;
   const used=S.artworks.filter(a=>a.placed).map(a=>a.frameIdx);
@@ -1735,72 +1894,39 @@ function spawnParticles(x,y,chars,n){
 }
 
 // ════════════════════════════════════════════════════════
-//  MULTIPLAYER — Firebase hardcodé, zéro config
+//  FIREBASE - URL hardcodée, zéro config
 // ════════════════════════════════════════════════════════
 const FB = 'https://maman-e8380-default-rtdb.firebaseio.com';
 
-let roomId     = null;
-let lastBcast  = 0;
-let lastChatTs = 0;
-let _polling   = false;
+let roomId    = null;
+let lastBcast = 0;
+let lastChatTs= 0;
+let _polling  = false;
 
-// ── REST helpers ──────────────────────────────────────
-async function fbSet(p, d){
-  try{ await fetch(FB+p+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); }catch(e){}
-}
-async function fbPatch(p, d){
-  try{ await fetch(FB+p+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); }catch(e){}
-}
-async function fbGet(p){
-  try{
-    const r=await fetch(FB+p+'.json');
-    if(!r.ok) return null;
-    return await r.json();
-  }catch(e){ return null; }
-}
-async function fbDel(p){
-  try{ await fetch(FB+p+'.json',{method:'DELETE'}); }catch(e){}
-}
+async function fbSet(p,d){ try{ await fetch(FB+p+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); }catch(e){} }
+async function fbPatch(p,d){ try{ await fetch(FB+p+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); }catch(e){} }
+async function fbGet(p){ try{ const r=await fetch(FB+p+'.json'); if(!r.ok)return null; const d=await r.json(); return d; }catch(e){ return null; } }
+async function fbDel(p){ try{ await fetch(FB+p+'.json',{method:'DELETE'}); }catch(e){} }
 
-// ── Présence + galerie + chat : polling ───────────────
+// ── Polling présence + chat ───────────────────────────
 function startPolling(){
   if(_polling) return; _polling=true;
 
-  // Présence toutes les 600ms
+  // Présence 600ms
   setInterval(async()=>{
     if(!roomId) return;
-    const all = await fbGet('/rooms/'+roomId+'/presence');
+    const all=await fbGet('/rooms/'+roomId+'/presence');
     if(!all||typeof all!=='object') return;
     const now=Date.now();
     Object.entries(all).forEach(([id,v])=>{
       if(id===ME.id||!v||now-(v.ts||0)>12000) return;
       visitors[id]={...v,lastSeen:now};
     });
-    Object.keys(visitors).forEach(id=>{
-      if(now-(visitors[id].lastSeen||0)>12000) delete visitors[id];
-    });
+    Object.keys(visitors).forEach(id=>{ if(now-(visitors[id].lastSeen||0)>12000) delete visitors[id]; });
     updateVList();
-  }, 600);
+  },600);
 
-  // Galerie toutes les 3s (visiteurs seulement)
-  if(ME.role!=='artist'){
-    setInterval(async()=>{
-      if(!roomId) return;
-      const g=await fbGet('/rooms/'+roomId+'/gallery');
-      if(!g) return;
-      S.museumName=g.museumName||'Musée';
-      document.getElementById('museum-label').textContent='🏛 '+S.museumName;
-      const meta=await fbGet('/rooms/'+roomId+'/artworks_meta');
-      if(!meta||!Array.isArray(meta)) return;
-      S.artworks=meta.map(a=>{
-        const c=S.artworks.find(x=>x.id===a.id);
-        return {...a,dataUrl:(c&&c.dataUrl)?c.dataUrl:null};
-      });
-      S.artworks.forEach(a=>{ if(!a.dataUrl) loadArtworkData(a.id); });
-    }, 3000);
-  }
-
-  // Chat toutes les 2s
+  // Chat 2s
   setInterval(async()=>{
     if(!roomId) return;
     const msgs=await fbGet('/rooms/'+roomId+'/chat');
@@ -1810,43 +1936,43 @@ function startPolling(){
       .filter(m=>m&&m.ts>lastChatTs&&m.id!==ME.id)
       .sort((a,b)=>a.ts-b.ts)
       .forEach(m=>{ lastChatTs=Math.max(lastChatTs,m.ts); showBubble(m.name||'?',m.text); });
-  }, 2000);
+  },2000);
+
+  // Commentaires 3s (visiteurs) + galerie si visiteur
+  setInterval(async()=>{
+    if(!roomId) return;
+    // Rafraîchir les commentaires si la fenêtre détail est ouverte
+    if(detailId && document.getElementById('art-detail').style.display==='flex'){
+      renderComments(detailId);
+    }
+    // Galerie pour les visiteurs
+    if(ME.role!=='artist'){
+      const g=await fbGet('/galleries/'+roomId+'/info');
+      if(g){ S.museumName=g.museumName||'Musée'; document.getElementById('museum-label').textContent='🏛 '+S.museumName; }
+      const meta=await fbGet('/galleries/'+roomId+'/artworks_meta');
+      if(meta&&Array.isArray(meta)){
+        S.artworks=meta.map(a=>{ const c=S.artworks.find(x=>x.id===a.id); return {...a,dataUrl:(c&&c.dataUrl)?c.dataUrl:null}; });
+        S.artworks.forEach(a=>{ if(!a.dataUrl) loadArtworkImage(roomId,a.id); });
+      }
+    }
+  },3000);
 }
 
-// ── Charger image d'un tableau (visiteur) ─────────────
-async function loadArtworkData(artId){
-  const d=await fbGet('/rooms/'+roomId+'/artwork_data/'+artId);
-  if(d&&d.dataUrl){
-    const art=S.artworks.find(a=>a.id===artId);
-    if(art){ art.dataUrl=d.dataUrl; delete IMG_CACHE[artId]; }
-  }
-}
-
-// ── Envoyer position (depuis game loop) ───────────────
+// ── Position ──────────────────────────────────────────
 function broadcast(){
   const now=Date.now();
   if(!roomId||now-lastBcast<500) return;
   lastBcast=now;
   fbPatch('/rooms/'+roomId+'/presence/'+ME.id,{
-    id:ME.id, x:Math.round(PL.x), y:Math.round(PL.y),
-    angle:+PL.angle.toFixed(2), name:ME.name, emoji:ME.emoji,
-    moving:PL.moving, ts:now
+    id:ME.id,x:Math.round(PL.x),y:Math.round(PL.y),
+    angle:+PL.angle.toFixed(2),name:ME.name,emoji:ME.emoji,moving:PL.moving,ts:now
   });
 }
 
-// ── Publier toute la galerie (artiste) ────────────────
+// ── Publier galerie ───────────────────────────────────
 async function broadcastGallery(){
   if(!roomId) return;
-  const meta=S.artworks.map(a=>({
-    id:a.id,title:a.title,desc:a.desc||'',
-    placed:a.placed,frameIdx:a.frameIdx,addedAt:a.addedAt||''
-  }));
-  await fbSet('/rooms/'+roomId+'/gallery',{museumName:S.museumName,ts:Date.now()});
-  if(meta.length) await fbSet('/rooms/'+roomId+'/artworks_meta',meta);
-  for(const a of S.artworks){
-    if(a.dataUrl) fbSet('/rooms/'+roomId+'/artwork_data/'+a.id,{dataUrl:a.dataUrl});
-  }
-  save();
+  await save(); // save() écrit tout sur Firebase
 }
 
 // ── Chat ──────────────────────────────────────────────
@@ -1856,20 +1982,16 @@ async function sendMsg(text){
   await fbPatch('/rooms/'+roomId+'/chat',{['m_'+ts]:{id:ME.id,name:ME.name,text,ts}});
   showBubble(ME.name,text);
 }
-function sendCustom(){
-  const t=document.getElementById('custom-msg').value.trim(); if(!t)return;
-  document.getElementById('custom-msg').value=''; sendMsg(t);
-}
+function sendCustom(){ const t=document.getElementById('custom-msg').value.trim();if(!t)return;document.getElementById('custom-msg').value='';sendMsg(t); }
 function showBubble(name,text){
-  const area=document.getElementById('chat-area');
-  area.style.display='flex';
+  const area=document.getElementById('chat-area'); area.style.display='flex';
   const b=document.createElement('div'); b.className='cbub';
   b.innerHTML=`<strong>${name}</strong>${text}`;
   area.appendChild(b);
   setTimeout(()=>{ b.remove(); if(!area.children.length)area.style.display='none'; },5200);
 }
 
-// ── Visiteurs en ligne ────────────────────────────────
+// ── Visiteurs en ligne + historique ──────────────────
 function updateVList(){
   const vkeys=Object.keys(visitors);
   document.getElementById('vcnt').textContent=vkeys.length;
@@ -1881,6 +2003,74 @@ function updateVList(){
     <div class="vi-st">En visite 🟢</div></div></div>`).join('');
 }
 
+// ── Commentaires sur tableaux ─────────────────────────
+async function addComment(artId, text){
+  if(!text.trim()) return;
+  const ts=Date.now();
+  await fbPatch('/rooms/'+roomId+'/comments/'+artId,{
+    ['c_'+ts]:{ id:ME.id, name:ME.name, emoji:ME.emoji, text:text.trim(), ts }
+  });
+  renderComments(artId);
+}
+
+async function renderComments(artId){
+  const el=document.getElementById('comments-list');
+  if(!el) return;
+  const data=await fbGet('/rooms/'+roomId+'/comments/'+artId);
+  if(!data||typeof data!=='object'){ el.innerHTML='<div class="empty-state" style="font-size:12px;padding:12px 0">Aucun commentaire · Soyez le premier !</div>'; return; }
+  const sorted=Object.values(data).filter(Boolean).sort((a,b)=>a.ts-b.ts);
+  el.innerHTML=sorted.map(c=>`
+    <div style="padding:8px 0;border-bottom:1px solid rgba(201,168,76,0.1);display:flex;gap:8px;align-items:flex-start">
+      <span style="font-size:16px">${c.emoji||'🌸'}</span>
+      <div>
+        <div style="color:#F0D080;font-size:11px;font-weight:600">${c.name||'Visiteur'} <span style="color:#9A7850;font-weight:400">${timeAgo(c.ts)}</span></div>
+        <div style="color:#E8D5B0;font-size:13px;margin-top:2px">${c.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+function timeAgo(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<60) return "à l\'instant";
+  if(s<3600) return 'il y a '+Math.floor(s/60)+'min';
+  if(s<86400) return 'il y a '+Math.floor(s/3600)+'h';
+  return 'il y a '+Math.floor(s/86400)+'j';
+}
+
+// ── Historique des visiteurs ──────────────────────────
+async function logVisitorArrival(){
+  if(!roomId||ME.role==='artist') return;
+  const vid=ME.id;
+  await fbPatch('/rooms/'+roomId+'/visitor_log',{
+    [vid]:{ id:vid, name:ME.name, emoji:ME.emoji, lastVisit:Date.now(), firstVisit:Date.now() }
+  });
+  // Si déjà présent, ne mettre à jour que lastVisit
+  const existing=await fbGet('/rooms/'+roomId+'/visitor_log/'+vid);
+  if(existing&&existing.firstVisit){
+    await fbPatch('/rooms/'+roomId+'/visitor_log/'+vid,{ lastVisit:Date.now(), name:ME.name, emoji:ME.emoji });
+  }
+}
+
+async function renderVisitorHistory(){
+  const log=await fbGet('/rooms/'+roomId+'/visitor_log');
+  const panel=document.getElementById('visitor-history');
+  if(!panel) return;
+  if(!log||typeof log!=='object'){ panel.innerHTML='<div class="empty-state">Aucun visiteur pour l\'instant…</div>'; return; }
+  const sorted=Object.values(log).filter(Boolean).sort((a,b)=>(b.lastVisit||0)-(a.lastVisit||0));
+  // Visiteurs actifs en ce moment
+  const activeIds=Object.keys(visitors);
+  panel.innerHTML=sorted.map(v=>{
+    const isOnline=activeIds.includes(v.id);
+    return `<div class="vitem">
+      <div class="vi-av">${v.emoji||'🌸'}</div>
+      <div>
+        <div class="vi-name">${v.name||'Visiteur'} ${isOnline?'🟢':''}</div>
+        <div class="vi-st">${isOnline?'En visite maintenant':'Dernière visite : '+timeAgo(v.lastVisit||0)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // ── Init multijoueur ──────────────────────────────────
 async function initMulti(){
   const params=new URLSearchParams(window.location.search);
@@ -1888,37 +2078,23 @@ async function initMulti(){
   const asVisitor=params.get('visitor')==='1';
 
   if(asVisitor&&urlRoom){
-    // MODE VISITEUR : roomId dans l'URL, galerie chargée depuis Firebase
     roomId=urlRoom;
     notify('⏳ Chargement de la galerie…');
-    const g=await fbGet('/rooms/'+roomId+'/gallery');
-    const meta=await fbGet('/rooms/'+roomId+'/artworks_meta');
-    if(meta&&Array.isArray(meta)){
-      S.artworks=meta;
-      S.artworks.forEach(a=>loadArtworkData(a.id));
-    }
-    if(g){ S.museumName=g.museumName||'Musée'; }
+    await loadGallery(roomId);
     document.getElementById('museum-label').textContent='🏛 '+S.museumName;
+    document.title='🎨 '+S.museumName;
     setTimeout(()=>notify('🎨 Bienvenue dans la galerie !'),1000);
-
+    await logVisitorArrival();
   } else {
-    // MODE ARTISTE : roomId = activeGalleryId (choisi dans le sélecteur)
-    roomId=activeGalleryId
-          ||localStorage.getItem('musee_room_id')
-          ||('r_'+Date.now()+'_'+Math.random().toString(36).substr(2,8));
-    activeGalleryId=roomId;
-    localStorage.setItem('musee_room_id',roomId);
+    roomId=activeGalleryId;
     window.history.replaceState({},'','?room='+roomId);
     await broadcastGallery();
   }
 
-  // Lien de partage — visiteur n'a rien à coller
-  const shareUrl=window.location.origin+window.location.pathname
-                 +'?room='+roomId+'&visitor=1';
+  const shareUrl=window.location.origin+window.location.pathname+'?room='+roomId+'&visitor=1';
   document.getElementById('share-url').textContent=shareUrl;
   document.getElementById('museum-label').textContent='🏛 '+(S.museumName||'Mon Musée');
   document.title='🎨 '+(S.museumName||'Mon Musée');
-
   window.addEventListener('beforeunload',()=>fbDel('/rooms/'+roomId+'/presence/'+ME.id));
   lastChatTs=Date.now();
   startPolling();
@@ -1979,69 +2155,66 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
 window.addEventListener('resize',resize);
 
 // ════════════════════════════════════════════════════════
-//  SÉLECTION DE GALERIE (artiste uniquement)
+//  SÉLECTION DE GALERIE - Firebase
 // ════════════════════════════════════════════════════════
-function showGalleryPicker(){
-  const list = getGalleryList();
-  const el = document.getElementById('gallery-picker');
+async function showGalleryPicker(){
+  const el   = document.getElementById('gallery-picker');
   const grid = document.getElementById('gp-grid');
-  grid.innerHTML = '';
+  el.style.display='flex';
+  grid.innerHTML='<div class="empty-state">⏳ Chargement…</div>';
 
-  // Bouton créer nouvelle galerie
-  const newBtn = document.createElement('div');
-  newBtn.className = 'gp-new';
-  newBtn.innerHTML = '<div class="gp-plus">+</div><div>Nouvelle galerie</div>';
-  newBtn.onclick = () => createNewGallery();
+  const list = await getGalleryList();
+  grid.innerHTML='';
+
+  // Bouton nouvelle galerie
+  const newBtn=document.createElement('div'); newBtn.className='gp-new';
+  newBtn.innerHTML='<div class="gp-plus">+</div><div>Nouvelle galerie</div>';
+  newBtn.onclick=()=>createNewGallery();
   grid.appendChild(newBtn);
 
-  // Galeries existantes
-  list.slice().reverse().forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'gp-card';
-    card.innerHTML = `
-      <div class="gp-card-name">${g.name || 'Sans nom'}</div>
-      <div class="gp-card-info">${g.count || 0} tableau(x) · ${g.created||''}</div>
+  if(!list.length){
+    const em=document.createElement('div'); em.className='empty-state';
+    em.style.gridColumn='1/-1';
+    em.textContent='Aucune galerie - créez-en une !';
+    grid.appendChild(em);
+    return;
+  }
+
+  list.forEach(g=>{
+    const card=document.createElement('div'); card.className='gp-card';
+    const date=g.updatedAt?timeAgo(g.updatedAt):'';
+    card.innerHTML=`
+      <div class="gp-card-name">${g.name||'Sans nom'}</div>
+      <div class="gp-card-info">${g.count||0} tableau(x) · ${date}</div>
       <div class="gp-card-actions">
         <button class="gp-open" onclick="openGallery('${g.id}')">🏛 Ouvrir</button>
-        <button class="gp-del" onclick="deleteGallery('${g.id}',this)">🗑</button>
+        <button class="gp-del"  onclick="deleteGallery('${g.id}',this)">🗑</button>
       </div>`;
     grid.appendChild(card);
   });
-
-  el.style.display = 'flex';
 }
 
 function createNewGallery(){
-  const id = 'gal_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
-  localStorage.setItem('musee_room_id', id);
+  const id='gal_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
   openGallery(id);
 }
 
-function openGallery(id){
-  document.getElementById('gallery-picker').style.display = 'none';
-  // Si nouvelle galerie (rien en storage), on sauvegarde d'abord le nom saisi
-  const existing = localStorage.getItem(galKey(id));
-  if(!existing && S.museumName && S.museumName !== 'Mon Musée'){
-    activeGalleryId = id;
-    save(); // persiste le nom tapé dans l'onboarding
+async function openGallery(id){
+  document.getElementById('gallery-picker').style.display='none';
+  activeGalleryId=id;
+  // Nouvelle galerie : sauvegarder d'abord le nom
+  if(S.museumName && S.museumName!=='Mon Musée'){
+    await fbSet('/galleries/'+id+'/info',{museumName:S.museumName,updatedAt:Date.now()});
+    await fbPatch('/gallery_index/'+id,{id,name:S.museumName,count:0,updatedAt:Date.now()});
   }
-  loadGallery(id); // charge les données (nom compris)
-  localStorage.setItem('musee_room_id', id);
-  activeGalleryId = id;
-  // S'assurer que le nom est bien défini
-  if(!S.museumName || S.museumName==='Mon Musée'){
-    const list=getGalleryList();
-    const g=list.find(x=>x.id===id);
-    if(g&&g.name) S.museumName=g.name;
-  }
+  await loadGallery(id);
   launchGame();
 }
 
-function deleteGallery(id, btn){
+async function deleteGallery(id,btn){
   if(!confirm('Supprimer cette galerie et toutes ses peintures ?')) return;
-  localStorage.removeItem(galKey(id));
-  let list = getGalleryList().filter(g => g.id !== id);
-  localStorage.setItem('musee_gallery_list', JSON.stringify(list));
+  await fbDel('/galleries/'+id);
+  await fbDel('/gallery_index/'+id);
   btn.closest('.gp-card').remove();
   notify('🗑 Galerie supprimée');
 }
@@ -2070,20 +2243,121 @@ function launchGame(){
   setTimeout(()=>{ if(npcs.length){ showNPCDialog(npcs[0]); }},3000);
 }
 
-window.addEventListener('load',()=>{
-  resize(); migrateOldGallery(); initStars();
+window.addEventListener('load',async ()=>{
+  resize(); initStars();
   const params=new URLSearchParams(window.location.search);
-  setTimeout(()=>{
+
+  // Visiteur avec profil mémorisé → skip onboarding
+  const asVisitor=params.get('visitor')==='1';
+  const savedProfile=getMyVisitorProfile();
+
+  setTimeout(async ()=>{
     document.getElementById('loading').style.display='none';
-    if(params.get('visitor')==='1'){
-      // Visiteur avec lien : charger galerie directement, passer onboarding en mode visiteur
+    if(asVisitor && savedProfile && savedProfile.role==='visitor'){
+      // Visiteur reconnu : entrer directement !
+      ME={...savedProfile, role:'visitor'};
+      document.getElementById('onboarding').style.display='none';
+      launchGame();
+    } else if(asVisitor){
       selectRole('visitor');
+      // Pré-remplir le prénom si connu
+      if(savedProfile) document.getElementById('inp-name').value=savedProfile.name||'';
       document.getElementById('onboarding').style.display='flex';
     } else {
+      // Artiste : pré-remplir si profil connu
+      const artistProfile=getMyVisitorProfile();
+      if(artistProfile&&artistProfile.role==='artist'){
+        document.getElementById('inp-name').value=artistProfile.name||'';
+      }
       document.getElementById('onboarding').style.display='flex';
     }
-  },2500);
+    // Migration async en arrière-plan (n'affecte pas l'UI)
+    migrateOldGallery();
+  },2200);
 });
+
+// ════════════════════════════════════════════════════════
+//  ENCHÈRES - ludique et symbolique
+// ════════════════════════════════════════════════════════
+let currentBidArtId = null;
+
+function openBid(artId){
+  const art=S.artworks.find(a=>a.id===artId);
+  if(!art) return;
+  currentBidArtId=artId;
+  document.getElementById('bid-art-title').textContent='"'+(art.title||'Sans titre')+'"';
+  document.getElementById('bid-panel').style.display='flex';
+  refreshBid();
+}
+function closeBid(){ document.getElementById('bid-panel').style.display='none'; currentBidArtId=null; }
+
+async function refreshBid(){
+  if(!currentBidArtId||!roomId) return;
+  const bids=await fbGet('/rooms/'+roomId+'/bids/'+currentBidArtId);
+  renderBids(bids);
+}
+
+function renderBids(bids){
+  const list=document.getElementById('bid-list');
+  const curEl=document.getElementById('bid-current-amount');
+  const leadEl=document.getElementById('bid-leader');
+  const presetsEl=document.getElementById('bid-presets');
+
+  if(!bids||typeof bids!=='object'){
+    curEl.textContent="Aucune mise"; leadEl.textContent="Soyez le premier à enchérir !";
+    list.innerHTML=''; presetsEl.innerHTML='';
+    // Boutons de mise rapide de départ
+    [100,500,1000,5000].forEach(v=>addPreset(presetsEl,v));
+    return;
+  }
+
+  const sorted=Object.values(bids).filter(Boolean).sort((a,b)=>b.amount-a.amount);
+  const top=sorted[0];
+  if(top){
+    curEl.textContent=top.amount.toLocaleString('fr-CH')+' CHF';
+    leadEl.textContent='🏆 '+top.name+(top.id===ME.id?' (vous)':'');
+  }
+
+  list.innerHTML=sorted.slice(0,8).map((b,i)=>`
+    <div class="bid-item ${i===0?'top':''}">
+      <span>${b.emoji||'🌸'} ${b.name}${b.id===ME.id?' <em style=color:#9A7850>(vous)</em>':''}</span>
+      <span style="color:var(--gold-l);font-weight:700">${b.amount.toLocaleString('fr-FR')} CHF</span>
+    </div>`).join('');
+
+  // Suggestions : 10% au-dessus de la mise actuelle
+  presetsEl.innerHTML='';
+  const base=top?top.amount:0;
+  [Math.round(base*1.1)||100, Math.round(base*1.25)||500, Math.round(base*1.5)||1000, Math.round(base*2)||5000]
+    .forEach(v=>addPreset(presetsEl,v));
+}
+
+function addPreset(el,val){
+  const b=document.createElement('button'); b.className='bid-preset';
+  b.textContent=val.toLocaleString('fr-CH')+' CHF';
+  b.onclick=()=>{ document.getElementById('bid-input').value=val; };
+  el.appendChild(b);
+}
+
+async function submitBid(){
+  const val=parseInt(document.getElementById('bid-input').value);
+  if(!val||val<1){ notify('Entrez un montant valide 💰'); return; }
+  if(!currentBidArtId||!roomId) return;
+
+  // Vérifier que la mise est supérieure à la mise actuelle
+  const existing=await fbGet('/rooms/'+roomId+'/bids/'+currentBidArtId+'/'+ME.id);
+  const allBids=await fbGet('/rooms/'+roomId+'/bids/'+currentBidArtId);
+  const maxBid=allBids?Math.max(...Object.values(allBids).filter(Boolean).map(b=>b.amount||0)):0;
+  if(val<=maxBid){ notify('Votre mise doit dépasser '+maxBid.toLocaleString('fr-CH')+' CHF 🔨'); return; }
+
+  await fbSet('/rooms/'+roomId+'/bids/'+currentBidArtId+'/'+ME.id,{
+    id:ME.id, name:ME.name, emoji:ME.emoji, amount:val, ts:Date.now()
+  });
+  document.getElementById('bid-input').value='';
+  notify('🔨 Mise de '+val.toLocaleString('fr-CH')+' CHF enregistrée !');
+  spawnParticles(PL.x,PL.y,['💰','🔨','⭐'],8);
+  refreshBid();
+}
+
 </script>
 
 <!-- GALLERY PICKER -->
@@ -2114,5 +2388,35 @@ window.addEventListener('load',()=>{
 
   </div>
 </div>
+
+<!-- ENCHÈRES -->
+
+<div id="bid-panel" onclick="if(event.target===this)closeBid()">
+  <div class="bid-sheet">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div>
+        <div class="bid-title">🔨 Enchères</div>
+        <div class="bid-sub" id="bid-art-title">Tableau sans titre</div>
+      </div>
+      <button onclick="closeBid()" style="background:none;border:1px solid rgba(201,168,76,.3);color:var(--gold);width:32px;height:32px;font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div style="color:#C8A870;font-size:12px;margin-bottom:14px;padding:8px;background:rgba(255,200,50,.06);border:1px solid rgba(255,200,80,.15)">
+      🎭 <em>Pour le plaisir ! Les enchères sont symboliques et sans valeur réelle.</em>
+    </div>
+    <div class="bid-current">
+      <div style="color:#9A7850;font-size:11px;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Mise actuelle</div>
+      <div class="bid-amount" id="bid-current-amount">Aucune mise</div>
+      <div class="bid-leader" id="bid-leader">Soyez le premier à enchérir !</div>
+    </div>
+    <div class="bid-list" id="bid-list"></div>
+    <div style="color:var(--gold);font-size:13px;margin-bottom:8px;font-family:'Playfair Display',serif">Votre mise :</div>
+    <div class="bid-presets" id="bid-presets"></div>
+    <div class="bid-input-row">
+      <input id="bid-input" class="inp" type="number" min="1" placeholder="Montant en CHF…" style="flex:1;margin-bottom:0;font-size:16px">
+      <button onclick="submitBid()" style="padding:12px 18px;background:linear-gradient(135deg,#8B6520,#F0D080,#8B6520);color:#0D0500;border:none;font-weight:700;font-size:15px;cursor:pointer">Miser 🔨</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
