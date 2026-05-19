@@ -429,7 +429,7 @@ text-align:center;padding:60px 20px;
 <div id="hud-top">
   <div class="hud-top-inner">
     <div style="display:flex;align-items:center;gap:6px">
-      <div class="museum-badge" id="museum-label" onclick="switchGallery()" title="Changer de galerie" style="cursor:pointer">🏛 Mon Musée</div>
+      <div class="museum-badge" id="museum-label" onclick="ME.role==='artist'?switchGallery():void(0)" title="Changer de galerie" style="cursor:pointer">🏛 Mon Musée</div>
     </div>
     <div class="visitors-chip" onclick="openPanel('share-panel')">👥 <span id="vcnt">0</span> en visite</div>
   </div>
@@ -443,7 +443,7 @@ text-align:center;padding:60px 20px;
     <button class="hb" onclick="openPanel('collection-panel')"><span class="hi">🖼</span>Collection</button>
     <button class="hb" onclick="openPanel('share-panel')"><span class="hi">🔗</span>Inviter</button>
     <button class="hb" onclick="openPanel('messages-panel')"><span class="hi">💬</span>Messages</button>
-    <button class="hb owner-only" id="journal-btn" onclick="openJournal()" style="position:relative"><span class="hi">📖</span>Journal<div id="journal-badge" style="display:none;position:absolute;top:6px;right:10px;background:#E05050;color:white;font-size:9px;font-weight:700;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center" id="journal-badge">!</div></button>
+    <button class="hb" id="journal-btn" onclick="openJournal()" style="position:relative"><span class="hi">📖</span>Journal<div id="journal-badge" style="display:none;position:absolute;top:6px;right:10px;background:#E05050;color:white;font-size:9px;font-weight:700;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center" id="journal-badge">!</div></button>
   </div>
 </div>
 
@@ -2184,7 +2184,7 @@ async function initMulti(){
   lastChatTs=Date.now();
   startPolling();
   // Vérifier les nouveaux événements du journal
-  if(ME.role==='artist') setTimeout(checkJournalNew, 2000);
+  setTimeout(checkJournalNew, 2000);
 }
 
 
@@ -2548,7 +2548,7 @@ function renderJournalEntry(e, lastRead){
 
 // ── Vérifier les nouveaux événements au démarrage ────
 async function checkJournalNew(){
-  if(ME.role!=='artist'||!roomId) return;
+  if(!roomId) return;
   const lastRead = parseInt(localStorage.getItem('journal_last_read_'+roomId)||'0');
   const raw = await fbGet('/rooms/'+roomId+'/journal');
   if(!raw||typeof raw!=='object') return;
